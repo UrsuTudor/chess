@@ -3,9 +3,6 @@ require_relative 'lib/game'
 game = Board.new
 game.display_board
 
-# create a board class
-  # the board should initialize with the pieces in the right position, so I should have a board class to avoid bloating the game class
-
 # will need a class for each piece
   # the piece should know which player it belongs to and what its current position is
     # can create a moveable module for this

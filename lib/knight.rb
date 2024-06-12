@@ -1,7 +1,9 @@
+require_relative 'piece'
+
 # manages the knight piece
-class Knight
-  def initialize(player)
-    @player = player
+class Knight < Piece
+  def initialize(player, current_position)
+    super(player, current_position)
     @white = '♞'
     @black = '♘'
   end

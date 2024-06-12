@@ -1,7 +1,9 @@
+require_relative 'piece'
+
 # manages the queen piece
-class Queen
-  def initialize(player)
-    @player = player
+class Queen < Piece
+  def initialize(player, current_position)
+    super(player, current_position)
     @white = '♛'
     @black = '♕'
   end

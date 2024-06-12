@@ -1,7 +1,9 @@
+require_relative 'piece'
+
 # manages the rook piece
-class Rook
-  def initialize(player)
-    @player = player
+class Rook < Piece
+  def initialize(player, current_position)
+    super(player, current_position)
     @white = '♜'
     @black = '♖'
   end
