@@ -1,4 +1,9 @@
-# create a board in the game class, each space belonging to a Space object
+require_relative 'lib/game'
+
+game = Board.new
+game.display_board
+
+# create a board class class, each space belonging to a Space object
   # the Space object should know if it is occupied or not and if it is, know which piece it is occupied by
   # the board should initialize with the pieces in the right position, so I should have a board class to avoid bloating the game class
 
