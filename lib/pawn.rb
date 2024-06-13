@@ -10,21 +10,21 @@ class Pawn < Piece
     @has_moved = false
   end
 
-  attr_reader :white, :black, :player, :has_moved
+  attr_reader :white, :black, :player, :has_moved, :row, :col
 
   def valid_one_forward
     if player == 'white'
-      valid_moves = [current_position[0] + 1, current_position[1]]
+      valid_moves = [row + 1, col]
     elsif player == 'black'
-      valid_moves = [current_position[0] - 1, current_position[1]]
+      valid_moves = [row - 1, col]
     end
   end
 
   def valid_doulbe_forward
     if player == 'white'
-      valid_moves = [current_position[0] + 2, current_position[1]]
+      valid_moves = [row + 2, col]
     elsif player == 'black'
-      valid_moves = [current_position[0] - 2, current_position[1]]
+      valid_moves = [row - 2, col]
     end
   end
 end
