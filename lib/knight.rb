@@ -2,8 +2,8 @@ require_relative 'piece'
 
 # manages the knight piece
 class Knight < Piece
-  def initialize(player, current_position)
-    super(player, current_position)
+  def initialize(player, row, col)
+    super(player, row, col)
     @white = '♞'
     @black = '♘'
   end

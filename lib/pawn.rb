@@ -3,8 +3,8 @@ require_relative 'board'
 
 # manages the pawn piece
 class Pawn < Piece
-  def initialize(player, current_position)
-    super(player, current_position)
+  def initialize(player, row, col)
+    super(player, row, col)
     @white = '♙'
     @black = '♟︎'
     @has_moved = false
@@ -14,17 +14,37 @@ class Pawn < Piece
 
   def valid_one_forward
     if player == 'white'
-      valid_moves = [row + 1, col]
+      [row + 1, col]
     elsif player == 'black'
-      valid_moves = [row - 1, col]
+      [row - 1, col]
     end
   end
 
   def valid_doulbe_forward
     if player == 'white'
-      valid_moves = [row + 2, col]
+      [row + 2, col]
     elsif player == 'black'
-      valid_moves = [row - 2, col]
+      [row - 2, col]
     end
+  end
+
+  def valid_white_takes(board)
+    valid_takes = []
+
+    valid_takes.push([row + 1, col + 1]) if opponent_piece?(board, row + 1, col + 1)
+
+    valid_takes.push([row + 1, col - 1]) if opponent_piece?(board, row + 1, col - 1)
+
+    valid_takes
+  end
+
+  def valid_black_takes(board)
+    valid_takes = []
+
+    valid_takes.push([row - 1, col + 1]) if opponent_piece?(board, row - 1, col + 1)
+
+    valid_takes.push([row - 1, col - 1]) if opponent_piece?(board, row - 1, col - 1)
+
+    valid_takes
   end
 end
