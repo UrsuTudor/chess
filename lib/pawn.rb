@@ -27,7 +27,7 @@ class Pawn < Piece
       valid_takes_black(board).each { |el| possible_moves.push(el) }
     end
 
-    possible_moves
+    exclude_out_of_bounds_moves(possible_moves)
   end
 
   def valid_one_forward_white(board)
@@ -70,3 +70,6 @@ class Pawn < Piece
     valid_takes
   end
 end
+
+# move the piece
+# let pawn transform

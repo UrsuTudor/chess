@@ -21,4 +21,8 @@ class Piece
 
     false
   end
+
+  def exclude_out_of_bounds_moves(possible_moves)
+    possible_moves.delete_if { |el| el[0] > 7 || el[0].negative? && el[1] > 8 || el[1].negative?}
+  end
 end
