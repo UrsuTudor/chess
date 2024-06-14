@@ -11,7 +11,8 @@ class Pawn < Piece
     @has_moved = false
   end
 
-  attr_reader :white, :black, :player, :has_moved, :row, :col
+  attr_reader :white, :black, :player, :row, :col
+  attr_accessor :has_moved
 
   def pawn_moves(board)
     possible_moves = []
@@ -19,11 +20,11 @@ class Pawn < Piece
     if player == 'white'
       possible_moves.push(valid_one_forward_white(board))
       possible_moves.push(valid_doulbe_forward_white(board)) if has_moved == false
-      possible_moves.push(valid_takes_white(board))
+      valid_takes_white(board).each { |el| possible_moves.push(el) }
     else
       possible_moves.push(valid_one_forward_black(board))
       possible_moves.push(valid_doulbe_forward_black(board)) if has_moved == false
-      possible_moves.push(valid_takes_black(board))
+      valid_takes_black(board).each { |el| possible_moves.push(el) }
     end
 
     possible_moves
