@@ -48,7 +48,7 @@ describe Pawn do
 
   describe 'valid_takes_white' do
     it 'returns an empty array if the pawn on [1][1] belongs to white and the right diagonal is empty' do
-      expect(white_pawn.valid_takes_white(board.board)).to be(nil)
+      expect(white_pawn.valid_takes_white(board.board)).to eq([])
     end
 
     it 'returns 2, 2 if the pawn on [1][1] belongs to white and there is a black pawn on the right diagonal' do
@@ -66,7 +66,7 @@ describe Pawn do
     it 'returns an empty array if the pawn on [1][1] belongs to white and the diagonals are occupied by allied pieces' do
       board.board[2][2] = Pawn.new('white', 2, 2)
       board.board[2][0] = Pawn.new('white', 2, 0)
-      expect(white_pawn.valid_takes_white(board.board)).to be(nil)
+      expect(white_pawn.valid_takes_white(board.board)).to eq([])
     end
 
     it 'returns 2, 2 if the pawn on [1][1] belongs to white, the left diagonal belongs to an ally and the right one to 
@@ -79,7 +79,7 @@ describe Pawn do
 
   describe 'valid_takes_black' do
     it 'returns an empty array if the pawn on [6][1] belongs to black and the right diagonal is empty' do
-      expect(black_pawn.valid_takes_black(board.board)).to be(nil)
+      expect(black_pawn.valid_takes_black(board.board)).to eq([])
     end
 
     it 'returns 5, 2 if the pawn on [6][1] belongs to black and there is a white pawn on the right diagonal' do
@@ -97,7 +97,7 @@ describe Pawn do
     it 'returns an empty array if the pawn on [6][1] belongs to black and the diagonals are occupied by allied pieces' do
       board.board[5][2] = Pawn.new('black', 5, 2)
       board.board[5][0] = Pawn.new('black', 5, 0)
-      expect(black_pawn.valid_takes_black(board.board)).to be(nil)
+      expect(black_pawn.valid_takes_black(board.board)).to eq([])
     end
 
     it 'returns 5, 2 if the pawn on [6][1] belongs to black, the left diagonal belongs to an ally and the right one to

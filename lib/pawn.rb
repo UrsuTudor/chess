@@ -53,8 +53,6 @@ class Pawn < Piece
 
     valid_takes.push([row + 1, col - 1]) if opponent_piece?(board, row + 1, col - 1)
 
-    return nil if valid_takes.empty?
-
     valid_takes
   end
 
@@ -64,8 +62,6 @@ class Pawn < Piece
     valid_takes.push([row - 1, col + 1]) if opponent_piece?(board, row - 1, col + 1)
 
     valid_takes.push([row - 1, col - 1]) if opponent_piece?(board, row - 1, col - 1)
-
-    return nil if valid_takes.empty?
 
     valid_takes
   end
