@@ -13,4 +13,12 @@ class Piece
 
     true
   end
+
+  def allied_piece?(board, row, col)
+    return false if board[row][col].nil?
+    return true if player == 'white' && board[row][col].player == 'white'
+    return true if player == 'black' && board[row][col].player == 'black'
+
+    false
+  end
 end

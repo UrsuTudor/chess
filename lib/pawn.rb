@@ -12,23 +12,23 @@ class Pawn < Piece
 
   attr_reader :white, :black, :player, :has_moved, :row, :col
 
-  def valid_one_forward
-    if player == 'white'
-      [row + 1, col]
-    elsif player == 'black'
-      [row - 1, col]
-    end
+  def valid_one_forward_white(board)
+    [row + 1, col] unless allied_piece?(board, row + 1, col)
   end
 
-  def valid_doulbe_forward
-    if player == 'white'
-      [row + 2, col]
-    elsif player == 'black'
-      [row - 2, col]
-    end
+  def valid_one_forward_black(board)
+    [row - 1, col] unless allied_piece?(board, row - 1, col)
   end
 
-  def valid_white_takes(board)
+  def valid_doulbe_forward_white(board)
+    [row + 2, col] unless allied_piece?(board, row + 2, col) || allied_piece?(board, row + 1, col)
+  end
+
+  def valid_doulbe_forward_black(board)
+    [row - 2, col] unless allied_piece?(board, row - 2, col) || allied_piece?(board, row - 1, col)
+  end
+
+  def valid_takes_white(board)
     valid_takes = []
 
     valid_takes.push([row + 1, col + 1]) if opponent_piece?(board, row + 1, col + 1)
@@ -38,7 +38,7 @@ class Pawn < Piece
     valid_takes
   end
 
-  def valid_black_takes(board)
+  def valid_takes_black(board)
     valid_takes = []
 
     valid_takes.push([row - 1, col + 1]) if opponent_piece?(board, row - 1, col + 1)
