@@ -108,22 +108,22 @@ describe Pawn do
     end
   end
 
-  describe 'pawn_moves' do
+  describe 'possible_moves' do
     it 'returns an array containing [2,1], [3,1], [2, 2] if the pawn has no yet moved and it has an enemy on its right diagonal' do
       board.board[2][2] = Pawn.new('black', 2, 2)
-      expect(white_pawn.pawn_moves(board.board)).to eq([[2, 1], [3, 1], [2, 2]])
+      expect(white_pawn.possible_moves(board.board)).to eq([[2, 1], [3, 1], [2, 2]])
     end
 
     it 'returns an array containing [2,1], [2, 2] if the pawn has no yet moved and it has an enemy on its right diagonal' do
       board.board[2][2] = Pawn.new('black', 2, 2)
       white_pawn.has_moved = true
-      expect(white_pawn.pawn_moves(board.board)).to eq([[2, 1], [2, 2]])
+      expect(white_pawn.possible_moves(board.board)).to eq([[2, 1], [2, 2]])
     end
 
     it 'returns an array containing [2,1], [3,1], [[2, 2], [2, 0]] if the pawn has no yet moved and it has an enemy on its right diagonal' do
       board.board[2][2] = Pawn.new('black', 2, 2)
       board.board[2][0] = Pawn.new('black', 2, 0)
-      expect(white_pawn.pawn_moves(board.board)).to eq([[2, 1], [3, 1], [2, 2], [2, 0]])
+      expect(white_pawn.possible_moves(board.board)).to eq([[2, 1], [3, 1], [2, 2], [2, 0]])
     end
   end
 end

@@ -14,7 +14,7 @@ class Pawn < Piece
   attr_reader :white, :black, :player, :row, :col
   attr_accessor :has_moved
 
-  def pawn_moves(board)
+  def possible_moves(board)
     possible_moves = []
 
     if player == 'white'

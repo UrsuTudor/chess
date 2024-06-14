@@ -27,13 +27,18 @@ class Piece
   end
 
   def move_piece(board)
-    'What piece would you like to move?'
+    puts 'What piece would you like to move?'
     piece = gets.chomp.to_a
 
-    'Where would you like to move it?'
-    coordinates = gets.chomp.to_a
+    puts 'Where would you like to move it?'
 
-    board[coordinates[0]][coordinates[1]] = board[piece[0]][piece[1]]
-    board[piece[0]][piece[1]] = nil
+    loop do
+      coordinates = gets.chomp.to_a
+      next 'That move is illegal.' unless piece.possible_moves.includes?(coordinates)
+
+      board[coordinates[0]][coordinates[1]] = board[piece[0]][piece[1]]
+      board[piece[0]][piece[1]] = nil
+      return
+    end
   end
 end
