@@ -1,7 +1,7 @@
 require_relative 'lib/game'
 
 game = Game.new
-game.board.display_board
+game.play
 
 # will need a class for each piece
   # the piece should know which player it belongs to and what its current position is
