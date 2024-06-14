@@ -1,5 +1,6 @@
 require_relative 'piece'
 require_relative 'board'
+require 'pry-byebug'
 
 # manages the pawn piece
 class Pawn < Piece
@@ -11,6 +12,22 @@ class Pawn < Piece
   end
 
   attr_reader :white, :black, :player, :has_moved, :row, :col
+
+  def pawn_moves(board)
+    possible_moves = []
+
+    if player == 'white'
+      possible_moves.push(valid_one_forward_white(board))
+      possible_moves.push(valid_doulbe_forward_white(board)) if has_moved == false
+      possible_moves.push(valid_takes_white(board))
+    else
+      possible_moves.push(valid_one_forward_black(board))
+      possible_moves.push(valid_doulbe_forward_black(board)) if has_moved == false
+      possible_moves.push(valid_takes_black(board))
+    end
+
+    possible_moves
+  end
 
   def valid_one_forward_white(board)
     [row + 1, col] unless allied_piece?(board, row + 1, col)
@@ -35,6 +52,8 @@ class Pawn < Piece
 
     valid_takes.push([row + 1, col - 1]) if opponent_piece?(board, row + 1, col - 1)
 
+    return nil if valid_takes.empty?
+
     valid_takes
   end
 
@@ -44,6 +63,8 @@ class Pawn < Piece
     valid_takes.push([row - 1, col + 1]) if opponent_piece?(board, row - 1, col + 1)
 
     valid_takes.push([row - 1, col - 1]) if opponent_piece?(board, row - 1, col - 1)
+
+    return nil if valid_takes.empty?
 
     valid_takes
   end
