@@ -17,17 +17,37 @@ class Game
 
   def move_piece
     puts 'What piece would you like to move?'
-    piece = gets.chomp.split(',').map { |num| num.to_i - 1 }
+    piece = player_coordinates
+    piece = board.board[piece[0]][piece[1]]
 
     puts 'Where would you like to move it?'
 
     loop do
-      coordinates = gets.chomp.split(',').map { |num| num.to_i - 1 }
-      next 'That move is illegal.' unless board.board[piece[0]][piece[1]].possible_moves(board.board).includes?(coordinates)
+      coordinates = player_coordinates
+      next puts 'That move is illegal.' unless valid_input?(piece, coordinates)
 
-      board.board[coordinates[0]][coordinates[1]] = board.board[piece[0]][piece[1]]
-      board.board[piece[0]][piece[1]] = nil
+      update_board(piece, coordinates[0], coordinates[1])
       return
     end
+  end
+
+  def update_board(piece, row, col)
+    board.board[row][col] = piece
+    board.board[piece.row][piece.col] = nil
+
+    piece.row = row
+    piece.col = col
+
+    piece.has_moved = true if piece.instance_of?(Pawn)
+  end
+
+  def player_coordinates
+    gets.chomp.split(',').map { |num| num.to_i - 1 }
+  end
+
+  def valid_input?(piece, coordinates)
+    return false unless piece.possible_moves(board.board).include?(coordinates)
+
+    true
   end
 end

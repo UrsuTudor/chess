@@ -11,8 +11,8 @@ class Pawn < Piece
     @has_moved = false
   end
 
-  attr_reader :white, :black, :player, :row, :col
-  attr_accessor :has_moved
+  attr_reader :white, :black, :player
+  attr_accessor :has_moved, :row, :col
 
   def possible_moves(board)
     possible_moves = []
