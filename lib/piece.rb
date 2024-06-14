@@ -25,4 +25,15 @@ class Piece
   def exclude_out_of_bounds_moves(possible_moves)
     possible_moves.delete_if { |el| el[0] > 7 || el[0].negative? && el[1] > 8 || el[1].negative?}
   end
+
+  def move_piece(board)
+    'What piece would you like to move?'
+    piece = gets.chomp.to_a
+
+    'Where would you like to move it?'
+    coordinates = gets.chomp.to_a
+
+    board[coordinates[0]][coordinates[1]] = board[piece[0]][piece[1]]
+    board[piece[0]][piece[1]] = nil
+  end
 end
