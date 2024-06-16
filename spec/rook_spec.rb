@@ -56,4 +56,50 @@ describe Rook do
       end
     end
   end
+
+  describe 'valid_vertical' do
+    context 'when the vertical is empty' do
+      it 'returns the whole vertical ' do
+        board.board[1][3] = nil
+        board.board[0][3] = nil
+        board.board[6][3] = nil
+        board.board[7][3] = nil
+        expect(rook.valid_vertical(board.board)).to eq([[3, 3], [2, 3], [1, 3], [0, 3], [5, 3], [6, 3], [7, 3]])
+      end
+    end
+
+    context 'when the downward vertical is empty and there is an allied piece two steps up' do
+      it 'returns the entire lower vertical and one space upward' do
+        board.board[1][3] = nil
+        board.board[0][3] = nil
+        board.board[6][3] = Rook.new('white', 6, 3)
+        expect(rook.valid_vertical(board.board)).to eq([[3, 3], [2, 3], [1, 3], [0, 3], [5, 3]])
+      end
+    end
+
+    context 'when the upward vertical is empty and there is an allied piece two steps down' do
+      it 'returns the entire upper vertical and one space downward' do
+        board.board[6][3] = nil
+        board.board[7][3] = nil
+        board.board[2][3] = Rook.new('white', 1, 3)
+        expect(rook.valid_vertical(board.board)).to eq([[3, 3], [5, 3], [6, 3], [7, 3]])
+      end
+    end
+
+    context 'when the verticals are occupied by allies' do
+      it 'returns an empty array' do
+        board.board[3][3] = Rook.new('white', 3, 3)
+        board.board[5][3] = Rook.new('white', 5, 3)
+        expect(rook.valid_vertical(board.board)).to eq([])
+      end
+    end
+
+    context 'when there is an opponent piece upward and an allied piece one step down' do
+      it 'returns the space with the opponent piece and on space downward' do
+        board.board[2][3] = Rook.new('white', 2, 3)
+        board.board[5][3] = Rook.new('black', 5, 3)
+        expect(rook.valid_vertical(board.board)).to eq([[3, 3], [5, 3]])
+      end
+    end
+  end
 end

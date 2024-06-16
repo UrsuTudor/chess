@@ -21,7 +21,6 @@ class Game
     piece = board.board[piece[0]][piece[1]]
 
     puts 'Where would you like to move it?'
-
     loop do
       coordinates = player_coordinates
       next puts 'That move is illegal.' unless valid_input?(piece, coordinates)
