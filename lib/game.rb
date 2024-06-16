@@ -38,7 +38,13 @@ class Game
     piece.row = row
     piece.col = col
 
-    piece.has_moved = true if piece.instance_of?(Pawn)
+    return unless piece.instance_of?(Pawn)
+
+    piece.has_moved = true
+    # having them like this is not a problem because a white pawn will never get to row 7 and a black pawn will never
+    # get to row 0, so the methods will simply return if the pawn does not belong to the specified player
+    piece.promote_pawn_black(board.board)
+    piece.promote_pawn_white(board.board)
   end
 
   def player_coordinates

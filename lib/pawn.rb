@@ -31,11 +31,11 @@ class Pawn < Piece
   end
 
   def valid_one_forward_white(board)
-    [row + 1, col] unless allied_piece?(board, row + 1, col)
+    [row + 1, col] unless allied_piece?(board, row + 1, col) || opponent_piece?(board, row + 1, col)
   end
 
   def valid_one_forward_black(board)
-    [row - 1, col] unless allied_piece?(board, row - 1, col)
+    [row - 1, col] unless allied_piece?(board, row - 1, col) || opponent_piece?(board, row - 1, col)
   end
 
   def valid_doulbe_forward_white(board)
@@ -65,7 +65,46 @@ class Pawn < Piece
 
     valid_takes
   end
+
+  def promote_pawn_white(board)
+    return unless row == 7
+
+    puts 'What rank would you like to promote your pawn to?'
+    promote_to = gets.chomp
+
+    case promote_to
+    when 'rook'
+      board[row][col] = Rook.new('white', row, col)
+    when 'bishop'
+      board[row][col] = Bishop.new('white', row, col)
+    when 'knight'
+      board[row][col] = Knight.new('white', row, col)
+    when 'queen'
+      board[row][col] = Queen.new('white', row, col)
+    else
+      'Please choose a valid piece.'
+    end
+  end
+
+  def promote_pawn_black(board)
+    return unless row.zero?
+
+    puts 'What rank would you like to promote your pawn to?'
+    promote_to = gets.chomp
+
+    case promote_to
+    when 'rook'
+      board[row][col] = Rook.new('black', row, col)
+    when 'bishop'
+      board[row][col] = Bishop.new('black', row, col)
+    when 'knight'
+      board[row][col] = Knight.new('black', row, col)
+    when 'queen'
+      board[row][col] = Queen.new('black', row, col)
+    else
+      'Please choose a valid piece.'
+    end
+  end
 end
 
-# move the piece
 # let pawn transform
