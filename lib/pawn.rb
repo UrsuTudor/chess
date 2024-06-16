@@ -12,7 +12,7 @@ class Pawn < Piece
   end
 
   attr_reader :white, :black, :player
-  attr_accessor :has_moved, :row, :col
+  attr_accessor :has_moved
 
   def possible_moves(board)
     possible_moves = []
@@ -106,5 +106,3 @@ class Pawn < Piece
     end
   end
 end
-
-# let pawn transform

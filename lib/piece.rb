@@ -6,7 +6,8 @@ class Piece
     @row = row
     @col = col
   end
-  attr_reader :player, :current_position
+  attr_reader :player
+  attr_accessor :row, :col
 
   def opponent_piece?(board, row, col)
     return false if board[row][col].nil?
@@ -25,6 +26,6 @@ class Piece
   end
 
   def exclude_out_of_bounds_moves(possible_moves)
-    possible_moves.delete_if { |el| el.nil? || el[0] > 7 || el[0].negative? && el[1] > 8 || el[1].negative? }
+    possible_moves.delete_if { |el| el.nil? || el[0] > 7 || el[0].negative? || el[1] > 7 || el[1].negative? }
   end
 end
