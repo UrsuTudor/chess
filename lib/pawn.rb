@@ -70,7 +70,7 @@ class Pawn < Piece
     return unless row == 7
 
     puts 'What rank would you like to promote your pawn to?'
-    promote_to = gets.chomp
+    promote_to = gets.chomp.downcase
 
     case promote_to
     when 'rook'
@@ -90,7 +90,7 @@ class Pawn < Piece
     return unless row.zero?
 
     puts 'What rank would you like to promote your pawn to?'
-    promote_to = gets.chomp
+    promote_to = gets.chomp.downcase
 
     case promote_to
     when 'rook'
