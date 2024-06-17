@@ -16,17 +16,29 @@ class Game
   end
 
   def move_piece
-    puts 'What piece would you like to move?'
-    piece = player_coordinates
-    piece = board.board[piece[0]][piece[1]]
+    piece = choose_piece
 
-    puts 'Where would you like to move it?'
+    puts 'Where would you like to move the piece?'
+
     loop do
       coordinates = player_coordinates
       next puts 'That move is illegal.' unless valid_input?(piece, coordinates)
 
       update_board(piece, coordinates[0], coordinates[1])
       return
+    end
+  end
+
+  def choose_piece
+    loop do
+      puts 'What piece would you like to move?'
+      piece = player_coordinates
+      piece = board.board[piece[0]][piece[1]]
+
+      next puts 'That spot is empty!' if piece.nil?
+      next puts 'That piece cannot move at the moment!' if piece.possible_moves(board.board).empty?
+
+      return piece
     end
   end
 
