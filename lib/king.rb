@@ -13,6 +13,9 @@ class King < Piece
   def possible_moves(board)
     king_moves = moves_on_lower_row + moves_on_same_row + moves_on_upper_row
 
+    king_moves.push([row, col + 2]) if castle_right?(board)
+    king_moves.push([row, col - 3]) if castle_left?(board)
+
     in_bounds_moves = exclude_out_of_bounds_moves(king_moves)
 
     in_bounds_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
@@ -28,5 +31,17 @@ class King < Piece
 
   def moves_on_lower_row
     [[row - 1, col - 1], [row - 1, col], [row - 1, col + 1]]
+  end
+
+  def castle_right?(board)
+    return true if row == 7 || row.zero? && board[row][col + 3].instance_of?(Rook)
+
+    false
+  end
+
+  def castle_left?(board)
+    return true if row == 7 || row.zero? && board[row][col - 4].instance_of?(Rook)
+
+    false
   end
 end
