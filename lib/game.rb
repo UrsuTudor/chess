@@ -43,15 +43,16 @@ class Game
   end
 
   def update_board(piece, row, col)
+    # set handle king to only move the rook and let the regular update board function move the king
+    handle_king(piece, row, col) if piece.instance_of?(King)
+
     board.board[row][col] = piece
     board.board[piece.row][piece.col] = nil
 
     piece.row = row
     piece.col = col
 
-    return unless piece.instance_of?(Pawn)
-
-    handle_pawn(piece)
+    handle_pawn(piece) if piece.instance_of?(Pawn)
   end
 
   def handle_pawn(pawn)
@@ -60,6 +61,29 @@ class Game
     # get to row 0, so the methods will simply return if the pawn does not belong to the specified player
     pawn.promote_pawn_black(board.board)
     pawn.promote_pawn_white(board.board)
+  end
+
+  def handle_king(king, row, col)
+    return if king.has_moved == true
+
+    do_castle_right(board.board, row, col) if king.castle_right?(board.board)
+    do_castle_left(board.board, row, col) if king.castle_left?(board.board)
+
+    king.has_moved = true
+  end
+
+  def do_castle_right(board, row, col)
+    return unless row == 7 && col == 6 || row.zero? && col == 6
+
+    board[row][5] = Rook.new(board[row][7].player, row, 7)
+    board[row][7] = nil
+  end
+
+  def do_castle_left(board, row, col)
+    return unless row == 7 && col == 2 || row.zero? && col == 2
+
+    board[row][3] = Rook.new(board[row][0].player, row, 3)
+    board[row][0] = nil
   end
 
   def player_coordinates
