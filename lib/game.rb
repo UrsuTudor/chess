@@ -3,15 +3,21 @@ require_relative 'board'
 class Game
   def initialize
     @board = Board.new
+    @white_king = board.board[0][4]
+    @black_king = board.board[7][4]
+    p white_king
+    p black_king
   end
 
-  attr_reader :board
+  attr_reader :board, :white_king, :black_king
 
   def play
     board.display_board
     loop do
       move_piece
       board.display_board
+      white_king.check_for_checks(board.board)
+      black_king.check_for_checks(board.board)
     end
   end
 
