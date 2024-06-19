@@ -1,4 +1,5 @@
 require_relative 'piece'
+require_relative 'knight'
 require 'pry-byebug'
 
 # manages the king piece
@@ -56,8 +57,12 @@ class King < Piece
   end
 
   def check_for_checks(board)
-    self.in_check = true if check_from_rook?(board)
-    self.in_check = true if check_from_bishop?(board)
+    return self.in_check = true if check_from_rook?(board)
+    return self.in_check = true if check_from_bishop?(board)
+    return self.in_check = true if check_from_knight?(board)
+    return self.in_check = true if check_from_pawn?(board)
+
+    self.in_check = false
   end
 
   def check_from_rook?(board)
@@ -71,7 +76,7 @@ class King < Piece
       # it is not needed to check whether or not the Rook is an ally because an allied rook would never enter the array
       #  of valid moves
       if piece.instance_of?(Rook) || piece.instance_of?(Queen)
-        puts "Check from #{piece.class} on #{row + 1}, #{col + 1}"
+        puts "Check from #{piece.class} on #{row + 1}, #{col + 1}!"
         return true
       end
     end
@@ -81,17 +86,58 @@ class King < Piece
 
   def check_from_bishop?(board)
     bishop_path_from_king = exclude_out_of_bounds_moves(right_diagonal(board) + left_diagonal(board))
+
     bishop_path_from_king.each do |element|
       row = element[0]
       col = element[1]
       piece = board[row][col]
 
       if piece.instance_of?(Bishop) || piece.instance_of?(Queen)
-        puts "Check from #{piece.class} on #{row + 1}, #{col + 1}"
+        puts "Check from #{piece.class} on #{row + 1}, #{col + 1}!"
         return true
       end
     end
 
     false
+  end
+
+  def check_from_knight?(board)
+    knight_path_from_king = Knight.new(player, row, col).possible_moves(board)
+
+    knight_path_from_king.each do |element|
+      row = element[0]
+      col = element[1]
+      piece = board[row][col]
+
+      if piece.instance_of?(Knight)
+        puts "Check from Knight on #{row + 1}, #{col + 1}!"
+        return true
+      end
+    end
+
+    false
+  end
+
+  def check_from_pawn?(board)
+    pawn_path_from_king = pawn_attacks
+
+    pawn_path_from_king.each do |element|
+      row = element[0]
+      col = element[1]
+      piece = board[row][col]
+
+      if piece.instance_of?(Pawn) && opponent_piece?(board, row, col)
+        puts "Check from Pawn on #{row + 1}, #{col + 1}!"
+        return true
+      end
+    end
+
+    false
+  end
+
+  def pawn_attacks
+    return [[row + 1, col + 1], [row + 1, col - 1]] if player == 'white'
+
+    [[row - 1, col + 1], [row - 1, col - 1]] if player == 'black'
   end
 end
