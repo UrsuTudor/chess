@@ -16,8 +16,8 @@ class Game
     loop do
       move_piece
       board.display_board
-      white_king.check_for_checks(board.board)
-      black_king.check_for_checks(board.board)
+      white_king.in_check?(board.board)
+      black_king.in_check?(board.board)
     end
   end
 

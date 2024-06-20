@@ -19,7 +19,14 @@ class King < Piece
   attr_reader :white, :black, :player
   attr_accessor :has_moved, :in_check
 
+  # if the king is in check
+    # check every possible move and push the ones that would not be in check
+    # if there is no possible move that would not result in a new check, check mate
+
   def possible_moves(board)
+    row_on_board = row
+    col_on_board = col
+
     king_moves = moves_on_lower_row + moves_on_same_row + moves_on_upper_row
 
     king_moves.push([row, col + 2]) if castle_right?(board)
@@ -28,6 +35,12 @@ class King < Piece
     in_bounds_moves = exclude_out_of_bounds_moves(king_moves)
 
     in_bounds_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
+
+    in_bounds_moves.each do |move|
+      self.row = move[0]
+      self.col = move[1]
+      p check_for_checks(board)
+    end
   end
 
   def moves_on_upper_row
@@ -56,13 +69,26 @@ class King < Piece
     false
   end
 
-  def check_for_checks(board)
-    return self.in_check = true if check_from_rook?(board)
-    return self.in_check = true if check_from_bishop?(board)
-    return self.in_check = true if check_from_knight?(board)
-    return self.in_check = true if check_from_pawn?(board)
+  def exclude_moves_in_check?(board)
+  end
 
-    self.in_check = false
+  def in_check?(board)
+    if check_from_rook?(board)
+      self.in_check = true
+      true
+    elsif check_from_bishop?(board)
+      self.in_check = true
+      true
+    elsif check_from_knight?(board)
+      self.in_check = true
+      true
+    elsif check_from_pawn?(board)
+      self.in_check = true
+      true
+    else
+      self.in_check = false
+      false
+    end
   end
 
   def check_from_rook?(board)

@@ -9,20 +9,20 @@ describe King do
   subject(:king_black) { described_class.new('black', 7, 4) }
   let(:board) { Board.new }
 
-  describe 'check_for_checks' do
+  describe 'in_check?' do
     context 'when the king is checked by a rook on the vertical line' do
       it 'changes in_check to true for white king' do
         board.board[1][4] = nil
         board.board[5][4] = Rook.new('black', 5, 4)
 
-        expect { king_white.check_for_checks(board.board) }.to change(king_white, :in_check).to true
+        expect { king_white.in_check?(board.board) }.to change(king_white, :in_check).to true
       end
 
       it 'changes in_check to true for black king' do
         board.board[6][4] = nil
         board.board[3][4] = Rook.new('white', 3, 4)
 
-        expect { king_black.check_for_checks(board.board) }.to change(king_black, :in_check).to true
+        expect { king_black.in_check?(board.board) }.to change(king_black, :in_check).to true
       end
     end
 
@@ -31,14 +31,14 @@ describe King do
         board.board[0][5] = nil
         board.board[0][6] = Rook.new('black', 0, 6)
 
-        expect { king_white.check_for_checks(board.board) }.to change(king_white, :in_check).to true
+        expect { king_white.in_check?(board.board) }.to change(king_white, :in_check).to true
       end
 
       it 'changes in_check to true for black king' do
         board.board[7][5] = nil
         board.board[7][6] = Rook.new('white', 7, 6)
 
-        expect { king_black.check_for_checks(board.board) }.to change(king_black, :in_check).to true
+        expect { king_black.in_check?(board.board) }.to change(king_black, :in_check).to true
       end
     end
 
@@ -47,7 +47,7 @@ describe King do
         board.board[0][5] = nil
         board.board[0][6] = Rook.new('white', 0, 6)
 
-        expect { king_white.check_for_checks(board.board) }.not_to change(king_white, :in_check)
+        expect { king_white.in_check?(board.board) }.not_to change(king_white, :in_check)
       end
     end
   end
@@ -57,7 +57,7 @@ describe King do
       board.board[1][5] = nil
       board.board[2][6] = Bishop.new('black', 2, 6)
 
-      expect { king_white.check_for_checks(board.board) }.to change(king_white, :in_check).to true
+      expect { king_white.in_check?(board.board) }.to change(king_white, :in_check).to true
     end
   end
 
@@ -66,7 +66,7 @@ describe King do
       board.board[6][5] = nil
       board.board[5][6] = Bishop.new('white', 5, 6)
 
-      expect { king_black.check_for_checks(board.board) }.to change(king_black, :in_check).to true
+      expect { king_black.in_check?(board.board) }.to change(king_black, :in_check).to true
     end
   end
 
@@ -75,7 +75,7 @@ describe King do
       board.board[6][5] = nil
       board.board[5][6] = Bishop.new('black', 5, 6)
 
-      expect { king_black.check_for_checks(board.board) }.to_not change(king_black, :in_check)
+      expect { king_black.in_check?(board.board) }.to_not change(king_black, :in_check)
     end
   end
 end
