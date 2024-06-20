@@ -5,8 +5,6 @@ class Game
     @board = Board.new
     @white_king = board.board[0][4]
     @black_king = board.board[7][4]
-    p white_king
-    p black_king
   end
 
   attr_reader :board, :white_king, :black_king
@@ -16,9 +14,23 @@ class Game
     loop do
       move_piece
       board.display_board
-      white_king.in_check?(board.board)
-      black_king.in_check?(board.board)
+      if white_king.in_check?(board.board)
+        puts 'check'
+        break puts 'Check mate, black wins!' if check_mate?
+      end
+
+      if black_king.in_check?(board.board)
+        puts 'check'
+        break puts 'Check mate, white wins!' if check_mate?
+      end
     end
+  end
+
+  def check_mate?
+    return true if white_king.possible_moves(board.board).empty?
+    return true if black_king.possible_moves(board.board).empty?
+
+    false
   end
 
   def move_piece
@@ -31,7 +43,7 @@ class Game
       next puts 'That move is illegal.' unless valid_input?(piece, coordinates)
 
       update_board(piece, coordinates[0], coordinates[1])
-      return
+      break
     end
   end
 

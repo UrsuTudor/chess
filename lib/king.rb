@@ -19,14 +19,7 @@ class King < Piece
   attr_reader :white, :black, :player
   attr_accessor :has_moved, :in_check
 
-  # if the king is in check
-    # check every possible move and push the ones that would not be in check
-    # if there is no possible move that would not result in a new check, check mate
-
   def possible_moves(board)
-    row_on_board = row
-    col_on_board = col
-
     king_moves = moves_on_lower_row + moves_on_same_row + moves_on_upper_row
 
     king_moves.push([row, col + 2]) if castle_right?(board)
@@ -34,13 +27,33 @@ class King < Piece
 
     in_bounds_moves = exclude_out_of_bounds_moves(king_moves)
 
-    in_bounds_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
+    non_allied_spaces = filter_allied_pieces(board, in_bounds_moves)
 
-    in_bounds_moves.each do |move|
+    filter_checked_positions(board, non_allied_spaces)
+  end
+
+  def filter_checked_positions(board, possible_king_moves)
+    # remembering them to change them back after the filtering is finished
+    row_on_board = row
+    col_on_board = col
+
+    # this simulates a scenario in which the king is being moved to all the possible positions and verifies whether or
+    # not the king would be in check
+    possible_king_moves.delete_if do |move|
       self.row = move[0]
       self.col = move[1]
-      p check_for_checks(board)
+      in_check?(board)
     end
+
+    # once the simulation is done, the kings coordinates need to be checked back to its initial, real ones
+    self.row = row_on_board
+    self.col = col_on_board
+
+    possible_king_moves
+  end
+
+  def filter_allied_pieces(board, possible_king_moves)
+    possible_king_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
   end
 
   def moves_on_upper_row
@@ -67,9 +80,6 @@ class King < Piece
     return true if row == 7 || row.zero? && board[row][col - 4].instance_of?(Rook)
 
     false
-  end
-
-  def exclude_moves_in_check?(board)
   end
 
   def in_check?(board)
@@ -101,10 +111,7 @@ class King < Piece
 
       # it is not needed to check whether or not the Rook is an ally because an allied rook would never enter the array
       #  of valid moves
-      if piece.instance_of?(Rook) || piece.instance_of?(Queen)
-        puts "Check from #{piece.class} on #{row + 1}, #{col + 1}!"
-        return true
-      end
+      return true if piece.instance_of?(Rook) || piece.instance_of?(Queen)
     end
 
     false
@@ -118,10 +125,7 @@ class King < Piece
       col = element[1]
       piece = board[row][col]
 
-      if piece.instance_of?(Bishop) || piece.instance_of?(Queen)
-        puts "Check from #{piece.class} on #{row + 1}, #{col + 1}!"
-        return true
-      end
+      return true if piece.instance_of?(Bishop) || piece.instance_of?(Queen)
     end
 
     false
@@ -135,27 +139,21 @@ class King < Piece
       col = element[1]
       piece = board[row][col]
 
-      if piece.instance_of?(Knight)
-        puts "Check from Knight on #{row + 1}, #{col + 1}!"
-        return true
-      end
+      return true if piece.instance_of?(Knight)
     end
 
     false
   end
 
   def check_from_pawn?(board)
-    pawn_path_from_king = pawn_attacks
+    pawn_path_from_king = exclude_out_of_bounds_moves(pawn_attacks)
 
     pawn_path_from_king.each do |element|
       row = element[0]
       col = element[1]
       piece = board[row][col]
 
-      if piece.instance_of?(Pawn) && opponent_piece?(board, row, col)
-        puts "Check from Pawn on #{row + 1}, #{col + 1}!"
-        return true
-      end
+      return true if piece.instance_of?(Pawn) && opponent_piece?(board, row, col)
     end
 
     false
