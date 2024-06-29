@@ -85,16 +85,16 @@ class King < Piece
   def in_check?(board)
     if check_from_rook?(board)
       self.in_check = true
-      true
+      checker = check_from_rook?(board)
     elsif check_from_bishop?(board)
       self.in_check = true
-      true
+      checker = check_from_bishop?(board)
     elsif check_from_knight?(board)
       self.in_check = true
-      true
+      checker = check_from_knight?(board)
     elsif check_from_pawn?(board)
       self.in_check = true
-      true
+      checker = check_from_pawn?
     else
       self.in_check = false
       false
