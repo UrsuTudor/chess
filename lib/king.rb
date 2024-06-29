@@ -45,7 +45,7 @@ class King < Piece
       in_check?(board)
     end
 
-    # once the simulation is done, the kings coordinates need to be checked back to its initial, real ones
+    # once the simulation is done, the king's coordinates need to be set back to its initial, real ones
     self.row = row_on_board
     self.col = col_on_board
 
@@ -111,7 +111,7 @@ class King < Piece
 
       # it is not needed to check whether or not the Rook is an ally because an allied rook would never enter the array
       #  of valid moves
-      return true if piece.instance_of?(Rook) || piece.instance_of?(Queen)
+      return piece if piece.instance_of?(Rook) || piece.instance_of?(Queen)
     end
 
     false
@@ -125,7 +125,7 @@ class King < Piece
       col = element[1]
       piece = board[row][col]
 
-      return true if piece.instance_of?(Bishop) || piece.instance_of?(Queen)
+      return piece if piece.instance_of?(Bishop) || piece.instance_of?(Queen)
     end
 
     false
@@ -139,7 +139,7 @@ class King < Piece
       col = element[1]
       piece = board[row][col]
 
-      return true if piece.instance_of?(Knight)
+      return piece if piece.instance_of?(Knight)
     end
 
     false
@@ -153,7 +153,7 @@ class King < Piece
       col = element[1]
       piece = board[row][col]
 
-      return true if piece.instance_of?(Pawn) && opponent_piece?(board, row, col)
+      return piece if piece.instance_of?(Pawn) && opponent_piece?(board, row, col)
     end
 
     false
