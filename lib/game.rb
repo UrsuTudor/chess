@@ -16,7 +16,7 @@ class Game
       board.display_board
       if white_king.in_check?(board.board)
         puts 'check'
-        break puts 'Check mate, black wins!' if check_mate? && !checker_can_be_taken?(white_king.in_check?(board.board), 'black')
+        break puts 'Check mate, black wins!' if check_mate? && !checker_can_be_taken?(white_king.in_check?(board.board))
       end
 
       if black_king.in_check?(board.board)
@@ -26,10 +26,10 @@ class Game
     end
   end
 
-  def checker_can_be_taken?(checker, player)
-    simulated_king = King.new(player, checker.row, checker.col)
+  def checker_can_be_taken?(checker)
+    simulated_king = King.new(checker.player, checker.row, checker.col)
 
-    return true if simulated_king.in_check?(board.board)
+    return true if simulated_king.in_check?(board.board) || simulated_king.check_from_king?(board.board)
 
     false
   end

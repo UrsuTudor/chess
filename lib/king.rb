@@ -12,7 +12,7 @@ class King < Piece
     @in_check = false
   end
 
-  # included to verify whether or not the king is in check
+  # included to verify whether or not the king is in check from bishop/rook/queen
   include Moveable_diagonally
   include Moveable_in_straight_line
 
@@ -42,6 +42,7 @@ class King < Piece
     possible_king_moves.delete_if do |move|
       self.row = move[0]
       self.col = move[1]
+
       in_check?(board)
     end
 
@@ -94,7 +95,7 @@ class King < Piece
       checker = check_from_knight?(board)
     elsif check_from_pawn?(board)
       self.in_check = true
-      checker = check_from_pawn?
+      checker = check_from_pawn?(board)
     else
       self.in_check = false
       false
@@ -104,10 +105,16 @@ class King < Piece
   def check_from_rook?(board)
     rook_path_from_king = exclude_out_of_bounds_moves(valid_vertical(board) + valid_horizontal(board))
 
-    rook_path_from_king.each do |element|
-      row = element[0]
-      col = element[1]
+    rook_path_from_king.each do |path|
+      row = path[0]
+      col = path[1]
+
       piece = board[row][col]
+
+      # this exists to fix a weird edge case in which a queen that is right next to the king on the horizontal or vertical
+      # line with no other pieces nearby, will return true when #filter_checked_positions runs the simulation and it
+      # simulates a scenario in which the king's position is the same as the queen's position
+      return false if path[0] == self.row && path[1] == self.col
 
       # it is not needed to check whether or not the Rook is an ally because an allied rook would never enter the array
       #  of valid moves
@@ -120,9 +127,9 @@ class King < Piece
   def check_from_bishop?(board)
     bishop_path_from_king = exclude_out_of_bounds_moves(right_diagonal(board) + left_diagonal(board))
 
-    bishop_path_from_king.each do |element|
-      row = element[0]
-      col = element[1]
+    bishop_path_from_king.each do |path|
+      row = path[0]
+      col = path[1]
       piece = board[row][col]
 
       return piece if piece.instance_of?(Bishop) || piece.instance_of?(Queen)
@@ -134,9 +141,9 @@ class King < Piece
   def check_from_knight?(board)
     knight_path_from_king = Knight.new(player, row, col).possible_moves(board)
 
-    knight_path_from_king.each do |element|
-      row = element[0]
-      col = element[1]
+    knight_path_from_king.each do |path|
+      row = path[0]
+      col = path[1]
       piece = board[row][col]
 
       return piece if piece.instance_of?(Knight)
@@ -148,12 +155,28 @@ class King < Piece
   def check_from_pawn?(board)
     pawn_path_from_king = exclude_out_of_bounds_moves(pawn_attacks)
 
-    pawn_path_from_king.each do |element|
-      row = element[0]
-      col = element[1]
+    pawn_path_from_king.each do |path|
+      row = path[0]
+      col = path[1]
       piece = board[row][col]
 
       return piece if piece.instance_of?(Pawn) && opponent_piece?(board, row, col)
+    end
+
+    false
+  end
+
+  # this was made for the #checker_can_be_taken? method in the Game class, so I can check whether or not the checker
+  # can be taken by the king
+  def check_from_king?(board)
+    area_around_king = moves_on_lower_row + moves_on_same_row + moves_on_upper_row
+
+    area_around_king.each do |square|
+      row = square[0]
+      col = square[1]
+      piece = board[row][col]
+
+      return piece if piece.instance_of?(King) && opponent_piece?(board, row, col)
     end
 
     false
