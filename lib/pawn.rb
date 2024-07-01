@@ -27,7 +27,7 @@ class Pawn < Piece
       valid_takes_black(board).each { |el| possible_moves.push(el) }
     end
 
-    exclude_out_of_bounds_moves(possible_moves)
+    exclude_out_of_bounds_moves(possible_moves).delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def valid_one_forward_white(board)

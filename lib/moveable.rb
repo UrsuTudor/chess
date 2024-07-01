@@ -19,7 +19,7 @@ module Moveable_diagonally
       break if allied_piece?(board, current_row, current_col)
     end
 
-    diagonal
+    diagonal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def descending_right_diagonal(board)
@@ -38,7 +38,7 @@ module Moveable_diagonally
       break if allied_piece?(board, current_row, current_col)
     end
 
-    diagonal
+    diagonal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def left_diagonal(board)
@@ -61,7 +61,7 @@ module Moveable_diagonally
       break if allied_piece?(board, current_row, current_col)
     end
 
-    diagonal
+    diagonal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def descending_left_diagonal(board)
@@ -80,7 +80,7 @@ module Moveable_diagonally
       break if allied_piece?(board, current_row, current_col)
     end
 
-    diagonal
+    diagonal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 end
 
@@ -104,7 +104,7 @@ module Moveable_in_straight_line
       break right_horizontal.push([row, space.col]) if opponent_piece?(board, row, space.col)
     end
 
-    right_horizontal
+    right_horizontal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def left_horizontal(board)
@@ -121,7 +121,7 @@ module Moveable_in_straight_line
       break left_horizontal.push([row, space.col]) if opponent_piece?(board, row, space.col)
     end
 
-    left_horizontal
+    left_horizontal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def valid_vertical(board)
@@ -142,7 +142,7 @@ module Moveable_in_straight_line
       break upward_vertical.push([current_row, col]) if opponent_piece?(board, current_row, col)
     end
 
-    upward_vertical
+    upward_vertical.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def downward_vertical(board)
@@ -160,6 +160,6 @@ module Moveable_in_straight_line
       break downward_vertical.push([current_row, col]) if opponent_piece?(board, current_row, col)
     end
 
-    downward_vertical
+    downward_vertical.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 end

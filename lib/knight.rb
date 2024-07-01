@@ -15,7 +15,8 @@ class Knight < Piece
 
     in_bounds_moves = exclude_out_of_bounds_moves(knight_moves)
 
-    in_bounds_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
+    filtered_allies = in_bounds_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
+    filtered_allies.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
   def upward_moves

@@ -34,6 +34,45 @@ class Game
     false
   end
 
+  def checker_path_can_be_blocked?(checker, king)
+    if checker.instance_of?(Bishop) || checker.instance_of?(Queen)
+      lower_diagonal_right_blockable?(checker, king)
+    end
+  end
+
+  def lower_diagonal_right_blockable?(checker, king)
+    checker_row = checker.row
+    checker_col = checker.col
+
+    king_row = king.row
+    king_col = king.col
+
+    return unless checker_row > king_row && checker_col > king_col
+
+    check_path = checker.descending_right_diagonal(board.board)
+
+    check_path.each do |square|
+      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
+
+      return true if simulated_king.in_check?(board.board) &&
+                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
+                     blockable_by_pawn?(simulated_king)
+    end
+
+    false
+  end
+
+  def blockable_by_pawn?(king)
+    if king.player == 'white'
+      return true if board[king.row + 1][king.col].instance_of?(Pawn)
+    else
+      p board[king.row - 1][king.col]
+      return true if board[king.row - 1][king.col].instance_of?(Pawn)
+    end
+
+    false
+  end
+
   def check_mate?
     return true if white_king.possible_moves(board.board).empty?
     return true if black_king.possible_moves(board.board).empty?
