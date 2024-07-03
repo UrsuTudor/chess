@@ -62,8 +62,70 @@ class Game
     false
   end
 
-  def simulate_opposing_king(king, row, col)
-    King.new(king.opposing_king(king), row, col)
+  def lower_diagonal_left_blockable?(checker, king)
+    checker_row = checker.row
+    checker_col = checker.col
+
+    king_row = king.row
+    king_col = king.col
+
+    return unless checker_row > king_row && checker_col < king_col
+
+    check_path = checker.descending_left_diagonal(board.board)
+
+    check_path.each do |square|
+      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
+
+      return true if simulated_king.in_check?(board.board) &&
+                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
+                     blockable_by_pawn?(simulated_king)
+    end
+
+    false
+  end
+
+  def upper_diagonal_left_blockable?(checker, king)
+    checker_row = checker.row
+    checker_col = checker.col
+
+    king_row = king.row
+    king_col = king.col
+
+    return unless checker_row < king_row && checker_col > king_col
+
+    check_path = checker.ascending_left_diagonal(board.board)
+
+    check_path.each do |square|
+      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
+
+      return true if simulated_king.in_check?(board.board) &&
+                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
+                     blockable_by_pawn?(simulated_king)
+    end
+
+    false
+  end
+
+  def upper_diagonal_right_blockable?(checker, king)
+    checker_row = checker.row
+    checker_col = checker.col
+
+    king_row = king.row
+    king_col = king.col
+
+    return unless checker_row < king_row && checker_col < king_col
+
+    check_path = checker.ascending_right_diagonal(board.board)
+
+    check_path.each do |square|
+      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
+
+      return true if simulated_king.in_check?(board.board) &&
+                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
+                     blockable_by_pawn?(simulated_king)
+    end
+
+    false
   end
 
   def blockable_by_pawn?(king)
