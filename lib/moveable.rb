@@ -1,3 +1,4 @@
+require 'pry-byebug'
 module Moveable_diagonally
   def right_diagonal(board)
     descending_right_diagonal(board) + ascending_right_diagonal(board)

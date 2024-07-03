@@ -229,4 +229,12 @@ class King < Piece
 
     [[king_row - 1, king_col + 1], [king_row - 1, king_col - 1]] if player == 'black'
   end
+
+  def opposing_king(king)
+    if king.player == 'white'
+      'black'
+    else
+      'white'
+    end
+  end
 end

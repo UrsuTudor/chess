@@ -62,15 +62,32 @@ class Game
     false
   end
 
+  def simulate_opposing_king(king, row, col)
+    King.new(king.opposing_king(king), row, col)
+  end
+
   def blockable_by_pawn?(king)
     if king.player == 'white'
-      return true if board[king.row + 1][king.col].instance_of?(Pawn)
+      potential_unmoved_black_pawn = board.board[king.row + 2][king.col]
+      potential_pawn = board.board[king.row + 1][king.col]
+
+      return true if potential_pawn.instance_of?(Pawn) ||
+                     movable_unmoved_pawn?(potential_unmoved_black_pawn, potential_pawn)
     else
-      p board[king.row - 1][king.col]
-      return true if board[king.row - 1][king.col].instance_of?(Pawn)
+      potential_unmoved_white_pawn = board.board[king.row - 2][king.col]
+      potential_pawn = board.board[king.row - 1][king.col]
+
+      return true if potential_pawn.instance_of?(Pawn) ||
+                     movable_unmoved_pawn?(potential_unmoved_white_pawn, potential_pawn)
     end
 
     false
+  end
+
+  def movable_unmoved_pawn?(unmoved_pawn, square_ahead_of_pawn)
+    unmoved_pawn.instance_of?(Pawn) &&
+      !unmoved_pawn.has_moved &&
+      square_ahead_of_pawn.nil?
   end
 
   def check_mate?
