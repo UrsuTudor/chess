@@ -1,4 +1,5 @@
 require_relative 'board'
+require_relative 'blockable'
 
 class Game
   def initialize
@@ -8,6 +9,8 @@ class Game
   end
 
   attr_reader :board, :white_king, :black_king
+
+  include Blockable
 
   def play
     board.display_board
@@ -32,124 +35,6 @@ class Game
     return true if simulated_king.in_check?(board.board) || simulated_king.check_from_king?(board.board)
 
     false
-  end
-
-  def checker_path_can_be_blocked?(checker, king)
-    if checker.instance_of?(Bishop) || checker.instance_of?(Queen)
-      lower_diagonal_right_blockable?(checker, king)
-    end
-  end
-
-  def lower_diagonal_right_blockable?(checker, king)
-    checker_row = checker.row
-    checker_col = checker.col
-
-    king_row = king.row
-    king_col = king.col
-
-    return unless checker_row > king_row && checker_col > king_col
-
-    check_path = checker.descending_right_diagonal(board.board)
-
-    check_path.each do |square|
-      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
-
-      return true if simulated_king.in_check?(board.board) &&
-                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
-                     blockable_by_pawn?(simulated_king)
-    end
-
-    false
-  end
-
-  def lower_diagonal_left_blockable?(checker, king)
-    checker_row = checker.row
-    checker_col = checker.col
-
-    king_row = king.row
-    king_col = king.col
-
-    return unless checker_row > king_row && checker_col < king_col
-
-    check_path = checker.descending_left_diagonal(board.board)
-
-    check_path.each do |square|
-      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
-
-      return true if simulated_king.in_check?(board.board) &&
-                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
-                     blockable_by_pawn?(simulated_king)
-    end
-
-    false
-  end
-
-  def upper_diagonal_left_blockable?(checker, king)
-    checker_row = checker.row
-    checker_col = checker.col
-
-    king_row = king.row
-    king_col = king.col
-
-    return unless checker_row < king_row && checker_col > king_col
-
-    check_path = checker.ascending_left_diagonal(board.board)
-
-    check_path.each do |square|
-      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
-
-      return true if simulated_king.in_check?(board.board) &&
-                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
-                     blockable_by_pawn?(simulated_king)
-    end
-
-    false
-  end
-
-  def upper_diagonal_right_blockable?(checker, king)
-    checker_row = checker.row
-    checker_col = checker.col
-
-    king_row = king.row
-    king_col = king.col
-
-    return unless checker_row < king_row && checker_col < king_col
-
-    check_path = checker.ascending_right_diagonal(board.board)
-
-    check_path.each do |square|
-      simulated_king = King.new(king.opposing_king(king), square[0], square[1])
-
-      return true if simulated_king.in_check?(board.board) &&
-                     !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
-                     blockable_by_pawn?(simulated_king)
-    end
-
-    false
-  end
-
-  def blockable_by_pawn?(king)
-    if king.player == 'white'
-      potential_unmoved_black_pawn = board.board[king.row + 2][king.col]
-      potential_pawn = board.board[king.row + 1][king.col]
-
-      return true if potential_pawn.instance_of?(Pawn) ||
-                     movable_unmoved_pawn?(potential_unmoved_black_pawn, potential_pawn)
-    else
-      potential_unmoved_white_pawn = board.board[king.row - 2][king.col]
-      potential_pawn = board.board[king.row - 1][king.col]
-
-      return true if potential_pawn.instance_of?(Pawn) ||
-                     movable_unmoved_pawn?(potential_unmoved_white_pawn, potential_pawn)
-    end
-
-    false
-  end
-
-  def movable_unmoved_pawn?(unmoved_pawn, square_ahead_of_pawn)
-    unmoved_pawn.instance_of?(Pawn) &&
-      !unmoved_pawn.has_moved &&
-      square_ahead_of_pawn.nil?
   end
 
   def check_mate?
