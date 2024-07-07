@@ -1,8 +1,11 @@
+require 'pry-byebug'
+
 module Blockable
   def checker_path_can_be_blocked?(checker, king)
-    blockable_diagonal?(checker, king) if checker.instance_of?(Bishop) || checker.instance_of?(Queen)
+    return blockable_diagonal?(checker, king) if checker.instance_of?(Bishop) || checker.instance_of?(Queen)
 
-    blockable_horizontal?(checker, king) if checker.instance_of?(Rook) || checker.instance_of?(Queen)
+    return blockable_horizontal?(checker, king) if checker.instance_of?(Rook) || checker.instance_of?(Queen)
+
     blockable_vertical?(checker, king) if checker.instance_of?(Rook) || checker.instance_of?(Queen)
   end
 

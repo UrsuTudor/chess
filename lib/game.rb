@@ -14,17 +14,18 @@ class Game
 
   def play
     board.display_board
+
     loop do
       move_piece
       board.display_board
       if white_king.in_check?(board.board)
         puts 'check'
-        break puts 'Check mate, black wins!' if check_mate? && !checker_can_be_taken?(white_king.in_check?(board.board))
+        break puts 'Check mate, black wins!' if white_check_mate?
       end
 
       if black_king.in_check?(board.board)
         puts 'check'
-        break puts 'Check mate, white wins!' if check_mate?
+        break puts 'Check mate, white wins!' if black_check_mate?
       end
     end
   end
@@ -37,9 +38,22 @@ class Game
     false
   end
 
-  def check_mate?
-    return true if white_king.possible_moves(board.board).empty?
-    return true if black_king.possible_moves(board.board).empty?
+  def white_check_mate?
+    checker = white_king.in_check?(board.board)
+
+    if white_king.possible_moves(board.board).empty?
+      return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, white_king)
+    end
+
+    false
+  end
+
+  def black_check_mate?
+    checker = black_king.in_check?(board.board)
+
+    if black_king.possible_moves(board.board).empty?
+      return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, black_king)
+    end
 
     false
   end
