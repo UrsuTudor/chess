@@ -18,8 +18,12 @@ class Game
     board.display_board
 
     loop do
+      puts "#{turn.capitalize}'s turn!"
+
       move_piece
+
       board.display_board
+
       if white_king.in_check?(board.board)
         puts 'check'
         break puts 'Check mate, black wins!' if white_check_mate?
@@ -69,19 +73,29 @@ class Game
 
     loop do
       coordinates = player_coordinates
-      next puts 'That move is illegal.' unless valid_input?(piece, coordinates)
+      next puts 'That move is illegal.' unless valid_coordinates?(piece, coordinates)
 
-      # board_backup = board.board
+      board_backup = board.board
       update_board(piece, coordinates[0], coordinates[1])
 
-      # if white_king.in_check?(board.board)
-      #   p 'that move leaves the king in check'
-      #   board.board = board_backup
-      #   move_piece
-      # end
+      different_move(board_backup) if still_in_check?
 
       break
     end
+  end
+
+  def still_in_check?
+    if turn == 'white' && white_king.in_check?(board.board) || turn == 'black' && black_king.in_check?(board.board)
+      puts 'That move leaves your king in check!'
+      return true
+    end
+
+    false
+  end
+
+  def different_move(board_backup)
+    board.board = board_backup
+    move_piece
   end
 
   def choose_piece
@@ -90,9 +104,7 @@ class Game
       piece = player_coordinates
       piece = board.board[piece[0]][piece[1]]
 
-      next puts 'That spot is empty!' if piece.nil?
-      next puts 'That piece cannot move at the moment!' if piece.possible_moves(board.board).empty?
-      next puts 'That piece does not belong to you!' if piece.player != turn
+      next unless valid_piece?(piece)
 
       return piece
     end
@@ -146,8 +158,23 @@ class Game
     gets.chomp.split(',').map { |num| num.to_i - 1 }
   end
 
-  def valid_input?(piece, coordinates)
+  def valid_coordinates?(piece, coordinates)
     return false unless piece.possible_moves(board.board).include?(coordinates)
+
+    true
+  end
+
+  def valid_piece?(piece)
+    if piece.nil?
+      puts 'That spot is empty!'
+      return false
+    elsif piece.possible_moves(board.board).empty?
+      puts 'That piece cannot move at the moment!'
+      return false
+    elsif piece.player != turn
+      puts 'That piece does not belong to you!'
+      return false
+    end
 
     true
   end
