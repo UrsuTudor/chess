@@ -6,9 +6,11 @@ class Game
     @board = Board.new
     @white_king = board.board[0][4]
     @black_king = board.board[7][4]
+    @turn = 'white'
   end
 
   attr_reader :board, :white_king, :black_king
+  attr_accessor :turn
 
   include Blockable
 
@@ -27,6 +29,8 @@ class Game
         puts 'check'
         break puts 'Check mate, white wins!' if black_check_mate?
       end
+
+      next_turn
     end
   end
 
@@ -67,7 +71,15 @@ class Game
       coordinates = player_coordinates
       next puts 'That move is illegal.' unless valid_input?(piece, coordinates)
 
+      # board_backup = board.board
       update_board(piece, coordinates[0], coordinates[1])
+
+      # if white_king.in_check?(board.board)
+      #   p 'that move leaves the king in check'
+      #   board.board = board_backup
+      #   move_piece
+      # end
+
       break
     end
   end
@@ -80,6 +92,7 @@ class Game
 
       next puts 'That spot is empty!' if piece.nil?
       next puts 'That piece cannot move at the moment!' if piece.possible_moves(board.board).empty?
+      next puts 'That piece does not belong to you!' if piece.player != turn
 
       return piece
     end
@@ -137,5 +150,13 @@ class Game
     return false unless piece.possible_moves(board.board).include?(coordinates)
 
     true
+  end
+
+  def next_turn
+    self.turn = if turn == 'white'
+                  'black'
+                else
+                  'white'
+                end
   end
 end
