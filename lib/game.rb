@@ -20,7 +20,7 @@ class Game
     loop do
       puts "#{turn.capitalize}'s turn!"
 
-      move_piece
+      return puts 'You have agreed to a draw!' if move_piece == 'draw'
 
       board.display_board
 
@@ -69,6 +69,8 @@ class Game
   def move_piece
     piece = choose_piece
 
+    return piece if piece == 'draw'
+
     puts 'Where would you like to move the piece?'
 
     loop do
@@ -102,6 +104,9 @@ class Game
     loop do
       puts 'What piece would you like to move?'
       piece = player_coordinates
+
+      return piece.join if piece.join == 'draw'
+
       piece = board.board[piece[0]][piece[1]]
 
       next unless valid_piece?(piece)
@@ -155,7 +160,11 @@ class Game
   end
 
   def player_coordinates
-    gets.chomp.split(',').map { |num| num.to_i - 1 }
+    coordinates = gets.chomp.split(',')
+
+    return coordinates if coordinates.join == 'draw'
+
+    coordinates.map { |num| num.to_i - 1 }
   end
 
   def valid_coordinates?(piece, coordinates)
