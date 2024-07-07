@@ -33,7 +33,7 @@ describe Game do
       expect(game.lower_diagonal_right_blockable?(checker, king_white)).to eq(true)
     end
 
-    it 'returns true when the path can be blocked by a that has no moved yet' do
+    it 'returns true when the path can be blocked by a that has not moved yet' do
       board.board[2][4] = Pawn.new('white', 3, 5)
       expect(game.lower_diagonal_right_blockable?(checker, king_white)).to eq(true)
     end
@@ -68,8 +68,7 @@ describe Game do
       expect(game.lower_diagonal_left_blockable?(checker, king_white)).to eq(true)
     end
 
-    it 'returns true when the path can be blocked by a that has no moved yet' do
-      board.display_board
+    it 'returns true when the path can be blocked by a that has not moved yet' do
       board.board[3][3] = Pawn.new('white', 4, 4)
       expect(game.lower_diagonal_left_blockable?(checker, king_white)).to eq(true)
     end
@@ -86,7 +85,6 @@ describe Game do
 
     it 'returns true when the path can be blocked by a knight' do
       board.board[4][1] = Knight.new('white', 5, 2)
-      board.display_board
       expect(game.upper_diagonal_left_blockable?(checker, king_white)).to eq(true)
     end
 
@@ -100,9 +98,8 @@ describe Game do
       expect(game.upper_diagonal_left_blockable?(checker, king_white)).to eq(true)
     end
 
-    it 'returns true when the path can be blocked by a that has no moved yet' do
+    it 'returns true when the path can be blocked by a that has not moved yet' do
       board.board[3][3] = Pawn.new('white', 4, 4)
-      board.display_board
       expect(game.upper_diagonal_left_blockable?(checker, king_white)).to eq(true)
     end
   end
@@ -118,7 +115,6 @@ describe Game do
 
     it 'returns true when the path can be blocked by a knight' do
       board.board[4][3] = Knight.new('white', 4, 3)
-      board.display_board
       expect(game.upper_diagonal_right_blockable?(checker, king_white)).to eq(true)
     end
 
@@ -132,9 +128,40 @@ describe Game do
       expect(game.upper_diagonal_right_blockable?(checker, king_white)).to eq(true)
     end
 
-    it 'returns true when the path can be blocked by a that has no moved yet' do
+    it 'returns true when the path can be blocked by a that has not moved yet' do
       board.board[3][1] = Pawn.new('white', 3, 1)
       expect(game.upper_diagonal_right_blockable?(checker, king_white)).to eq(true)
+    end
+  end
+
+  describe 'right_horizontal_blockable?' do
+    let(:checker) { board.board[4][0] }
+    let(:king_white) { King.new('white', 4, 2) }
+
+    before do
+      board.board[4][0] = Rook.new('black', 4, 0)
+      board.board[4][2] = king_white
+    end
+
+    it 'returns true when the path can be blocked by a knight' do
+      board.board[2][2] = Knight.new('white', 2, 2)
+      board.display_board
+      expect(game.right_horizontal_blockable?(checker, king_white)).to eq(true)
+    end
+
+    it 'returns true when the path can be blocked by a bishop' do
+      board.board[2][3] = Bishop.new('white', 2, 3)
+      expect(game.right_horizontal_blockable?(checker, king_white)).to eq(true)
+    end
+
+    it 'returns true when the path can be blocked by a rook' do
+      board.board[1][1] = Rook.new('white', 1, 1)
+      expect(game.right_horizontal_blockable?(checker, king_white)).to eq(true)
+    end
+
+    it 'returns true when the path can be blocked by a that has not moved yet' do
+      board.board[2][1] = Pawn.new('white', 2, 1)
+      expect(game.right_horizontal_blockable?(checker, king_white)).to eq(true)
     end
   end
 end
