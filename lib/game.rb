@@ -74,6 +74,21 @@ by typing the game by typing the word in the console."
     end
   end
 
+  def load_game
+    save_file = File.read('save.json')
+    data = JSON.parse(save_file)
+
+    board.board = data['board'].map do |row|
+      row.map do |col|
+        class_from_json(col) unless col.nil?
+      end
+    end
+
+    self.white_king = class_from_json(data['white_king'])
+    self.black_king = class_from_json(data['black_king'])
+    self.turn = data['turn']
+  end
+
   def checker_can_be_taken?(checker)
     simulated_king = King.new(checker.player, checker.row, checker.col)
 

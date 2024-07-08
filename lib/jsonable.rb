@@ -17,7 +17,7 @@ module JSONable
     get_class_name(json_class).new(json_class['player'], json_class['row'], json_class['col'])
   end
 
-  def get_class_name(json_class)
+  def class_name(json_class)
     case json_class['json_class']
     when 'Rook'
       Rook
