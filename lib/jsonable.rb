@@ -14,7 +14,7 @@ module JSONable
   end
 
   def class_from_json(json_class)
-    get_class_name(json_class).new(json_class['player'], json_class['row'], json_class['col'])
+    class_name(json_class).new(json_class['player'], json_class['row'], json_class['col'])
   end
 
   def class_name(json_class)
