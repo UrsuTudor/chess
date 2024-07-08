@@ -1,6 +1,7 @@
 require_relative 'piece'
 require_relative 'rook'
 require_relative 'bishop'
+require_relative 'jsonable'
 
 # manages the queen piece
 class Queen < Piece
@@ -9,6 +10,8 @@ class Queen < Piece
     @white = '♛'
     @black = '♕'
   end
+
+  include JSONable
 
   attr_reader :white, :black, :player
 

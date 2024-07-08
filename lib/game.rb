@@ -1,5 +1,8 @@
 require_relative 'board'
 require_relative 'blockable'
+require_relative 'jsonable'
+require 'json'
+require 'erb'
 
 class Game
   def initialize
@@ -9,18 +12,36 @@ class Game
     @turn = 'white'
   end
 
-  attr_reader :board, :white_king, :black_king
-  attr_accessor :turn
+  attr_accessor :turn, :board, :white_king, :black_king
 
   include Blockable
+  include JSONable
 
   def play
     board.display_board
 
-    loop do
-      puts "#{turn.capitalize}'s turn!"
+    puts "\nYou can ask for a draw, save or load your latest save
+by typing the game by typing the word in the console."
 
-      return puts 'You have agreed to a draw!' if move_piece == 'draw'
+    loop do
+      puts "\n#{turn.capitalize}'s turn!"
+
+      player_action = player_input
+
+      return puts 'You have agreed to a draw!' if player_action == 'draw'
+
+      if player_action == 'save'
+        save_game
+        puts 'Your game was saved!'
+        next
+      elsif player_action == 'load'
+        load_game
+        board.display_board
+        puts 'Last save was loaded!'
+        next
+      end
+
+      move_piece(player_action)
 
       board.display_board
 
@@ -36,6 +57,37 @@ class Game
 
       next_turn
     end
+  end
+
+  def save_game
+    serialized_game = JSON.dump({ board: board.board.each do |row|
+      row.each do |col|
+        col.to_json
+      end
+    end,
+                                  white_king:,
+                                  black_king:,
+                                  turn: })
+
+    File.open('save.json', 'w') do |file|
+      file.puts serialized_game
+    end
+  end
+
+  # JSON.parse(serialized_game)['board']
+  def load_game
+    save_file = File.read('save.json')
+    data = JSON.parse(save_file)
+
+    board.board = data['board'].map do |row|
+      row.map do |col|
+        class_from_json(col) unless col.nil?
+      end
+    end
+
+    self.white_king = class_from_json(data['white_king'])
+    self.black_king = class_from_json(data['black_king'])
+    self.turn = data['turn']
   end
 
   def checker_can_be_taken?(checker)
@@ -66,22 +118,19 @@ class Game
     false
   end
 
-  def move_piece
-    piece = choose_piece
-
-    return piece if piece == 'draw'
+  def move_piece(input)
+    piece = choose_piece(input)
 
     puts 'Where would you like to move the piece?'
 
     loop do
-      coordinates = player_coordinates
+      coordinates = player_input
       next puts 'That move is illegal.' unless valid_coordinates?(piece, coordinates)
 
       board_backup = board.board
       update_board(piece, coordinates[0], coordinates[1])
 
       different_move(board_backup) if still_in_check?
-
       break
     end
   end
@@ -97,17 +146,19 @@ class Game
 
   def different_move(board_backup)
     board.board = board_backup
-    move_piece
+    new_input = player_input
+    move_piece(new_input)
   end
 
-  def choose_piece
+  def choose_piece(input)
     loop do
-      puts 'What piece would you like to move?'
-      piece = player_coordinates
-
-      return piece.join if piece.join == 'draw'
-
-      piece = board.board[piece[0]][piece[1]]
+      if valid_piece?(board.board[input[0]][input[1]])
+        piece = board.board[input[0]][input[1]]
+      else
+        puts 'What piece would you like to move?'
+        new_input = player_input
+        piece = board.board[new_input[0]][new_input[1]]
+      end
 
       next unless valid_piece?(piece)
 
@@ -159,10 +210,12 @@ class Game
     board[row][0] = nil
   end
 
-  def player_coordinates
+  def player_input
     coordinates = gets.chomp.split(',')
 
-    return coordinates if coordinates.join == 'draw'
+    return coordinates.join if coordinates.join == 'draw'
+    return coordinates.join if coordinates.join == 'save'
+    return coordinates.join if coordinates.join == 'load'
 
     coordinates.map { |num| num.to_i - 1 }
   end

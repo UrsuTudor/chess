@@ -1,5 +1,6 @@
 require_relative 'piece'
 require_relative 'moveable'
+require_relative 'jsonable'
 
 # manages the bishop piece
 class Bishop < Piece
@@ -10,6 +11,7 @@ class Bishop < Piece
   end
 
   include Moveable_diagonally
+  include JSONable
 
   attr_reader :white, :black, :player
 

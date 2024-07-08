@@ -1,6 +1,7 @@
 require_relative 'piece'
 require_relative 'moveable'
 require 'pry-byebug'
+require_relative 'jsonable'
 
 # manages the rook piece
 class Rook < Piece
@@ -13,6 +14,7 @@ class Rook < Piece
   attr_reader :white, :black, :player
 
   include Moveable_in_straight_line
+  include JSONable
 
   def possible_moves(board)
     exclude_out_of_bounds_moves(valid_horizontal(board) + valid_vertical(board))

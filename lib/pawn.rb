@@ -1,6 +1,7 @@
 require_relative 'piece'
 require_relative 'board'
 require 'pry-byebug'
+require_relative 'jsonable'
 
 # manages the pawn piece
 class Pawn < Piece
@@ -10,6 +11,8 @@ class Pawn < Piece
     @black = '♟︎'
     @has_moved = false
   end
+
+  include JSONable
 
   attr_reader :white, :black, :player
   attr_accessor :has_moved

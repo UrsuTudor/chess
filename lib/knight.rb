@@ -1,4 +1,5 @@
 require_relative 'piece'
+require_relative 'jsonable'
 
 # manages the knight piece
 class Knight < Piece
@@ -7,6 +8,8 @@ class Knight < Piece
     @white = '♞'
     @black = '♘'
   end
+
+  include JSONable
 
   attr_reader :white, :black, :player
 
