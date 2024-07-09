@@ -31,6 +31,8 @@ module Blockable
     check_path.each do |square|
       simulated_king = King.new(king.opposing_king(king), square[0], square[1])
 
+      # we want to exclude situations in which the simulated king would be in check from a pawn because that spot is
+      # empty on the actual board and the pawn would not be able to move diagonally to block the check
       return true if simulated_king.in_check?(board.board) &&
                      !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
                      blockable_by_pawn?(simulated_king)
@@ -83,18 +85,30 @@ module Blockable
 
   def blockable_by_pawn?(king)
     if king.player == 'white'
-      potential_unmoved_black_pawn = board.board[king.row + 2][king.col]
-      potential_pawn = board.board[king.row + 1][king.col]
-
-      return true if potential_pawn.instance_of?(Pawn) ||
-                     movable_unmoved_pawn?(potential_unmoved_black_pawn, potential_pawn)
+      return true if blockable_by_white_pawn?(king)
     else
-      potential_unmoved_white_pawn = board.board[king.row - 2][king.col]
-      potential_pawn = board.board[king.row - 1][king.col]
-
-      return true if potential_pawn.instance_of?(Pawn) ||
-                     movable_unmoved_pawn?(potential_unmoved_white_pawn, potential_pawn)
+      return true if blockable_by_black_pawn?(king)
     end
+
+    false
+  end
+
+  def blockable_by_white_pawn?(king)
+    potential_unmoved_black_pawn = board.board[king.row + 2][king.col]
+    potential_pawn = board.board[king.row + 1][king.col]
+
+    return true if potential_pawn.instance_of?(Pawn) ||
+                   movable_unmoved_pawn?(potential_unmoved_black_pawn, potential_pawn)
+
+    false
+  end
+
+  def blockable_by_black_pawn?(king)
+    potential_unmoved_white_pawn = board.board[king.row - 2][king.col]
+    potential_pawn = board.board[king.row - 1][king.col]
+
+    return true if potential_pawn.instance_of?(Pawn) ||
+                   movable_unmoved_pawn?(potential_unmoved_white_pawn, potential_pawn)
 
     false
   end
