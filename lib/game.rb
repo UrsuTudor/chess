@@ -2,6 +2,7 @@ require_relative 'board'
 require_relative 'blockable'
 require_relative 'jsonable'
 require_relative 'saveable'
+require_relative 'checkable'
 require 'json'
 require 'erb'
 
@@ -18,6 +19,7 @@ class Game
   include Blockable
   include JSONable
   include Saveable
+  include Checkable
 
   def play
     board.display_board
@@ -43,53 +45,21 @@ by typing the word in the console at any point."
     end
   end
 
-  def check?
-    if white_king.in_check?(board.board)
-      puts "\nCheck!"
-    elsif black_king.in_check?(board.board)
-      puts "\nCheck!"
+  def choose_piece(input)
+    loop do
+      piece = board.board[input[0]][input[1]]
+
+      if valid_piece?(piece)
+        piece
+      else
+        new_input = player_input
+        piece = board.board[new_input[0]][new_input[1]]
+      end
+
+      next unless valid_piece?(piece)
+
+      return piece
     end
-  end
-
-  def check_mate?
-    if white_check_mate?
-      puts "\nCheck mate, black wins!"
-      return true
-    elsif black_check_mate?
-      puts "\nCheck mate, white wins!"
-      return true
-    end
-
-    false
-  end
-
-  def checker_can_be_taken?(checker)
-    simulated_king = King.new(checker.player, checker.row, checker.col)
-
-    return true if simulated_king.in_check?(board.board) || simulated_king.check_from_king?(board.board)
-
-    false
-  end
-
-  def white_check_mate?
-    checker = white_king.in_check?(board.board)
-
-    if white_king.possible_moves(board.board).empty?
-      return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, white_king)
-    end
-
-    false
-  end
-
-  def black_check_mate?
-    checker = black_king.in_check?(board.board)
-    return if checker == false
-
-    if black_king.possible_moves(board.board).empty?
-      return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, black_king)
-    end
-
-    false
   end
 
   def move_piece(input)
@@ -110,15 +80,7 @@ by typing the word in the console at any point."
     end
   end
 
-  def still_in_check?
-    if turn == 'white' && white_king.in_check?(board.board) || turn == 'black' && black_king.in_check?(board.board)
-      puts 'That move leaves your king in check!'
-      return true
-    end
-
-    false
-  end
-
+  # used by move_piece when the king would still be in check after the move chosen by the player
   def different_move(old_piece, row_backup, col_backup, old_coordinates)
     old_piece.row = row_backup
     old_piece.col = col_backup
@@ -132,25 +94,8 @@ by typing the word in the console at any point."
     move_piece(new_input)
   end
 
-  def choose_piece(input)
-    loop do
-      piece = board.board[input[0]][input[1]]
-
-      if valid_piece?(piece)
-        piece
-      else
-        new_input = player_input
-        piece = board.board[new_input[0]][new_input[1]]
-      end
-
-      next unless valid_piece?(piece)
-
-      return piece
-    end
-  end
-
   def update_board(piece, row, col)
-    # set handle king to only move the rook and let the regular update board function move the king
+    # only moves the rook, the regular function will move the king
     handle_king(piece, row, col) if piece.instance_of?(King)
 
     board.board[row][col] = piece
@@ -162,6 +107,7 @@ by typing the word in the console at any point."
     handle_pawn(piece) if piece.instance_of?(Pawn)
   end
 
+  # diferent behaviour depending on whether or not the pawn has moved or has reached the finish
   def handle_pawn(pawn)
     pawn.has_moved = true
     # having them like this is not a problem because a white pawn will never get to row 7 and a black pawn will never
@@ -170,6 +116,7 @@ by typing the word in the console at any point."
     pawn.promote_pawn_white(board.board)
   end
 
+  # used for castles
   def handle_king(king, row, col)
     return if king.has_moved == true
 

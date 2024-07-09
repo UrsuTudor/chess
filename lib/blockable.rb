@@ -1,6 +1,16 @@
 require 'pry-byebug'
 
+# includes methods that make is possible to determine whether or not the path of a checker can be blocked;
+# also contains the method that checks if the checker can be taken
 module Blockable
+  def checker_can_be_taken?(checker)
+    simulated_king = King.new(checker.player, checker.row, checker.col)
+
+    return true if simulated_king.in_check?(board.board) || simulated_king.check_from_king?(board.board)
+
+    false
+  end
+
   def checker_path_can_be_blocked?(checker, king)
     return blockable_diagonal?(checker, king) if checker.instance_of?(Bishop) || checker.instance_of?(Queen)
 
