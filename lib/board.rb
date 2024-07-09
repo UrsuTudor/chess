@@ -22,30 +22,35 @@ class Board
   def display_board
     puts "\n  -----------------------------------------"
     row_number = 8
+
     board.reverse.each do |row|
       print "#{row_number} |"
 
       row.each do |col|
-        if col.nil?
-          print "#{col}    |"
-
-        # for some reason black pawns are bigger than the other pieces and I need a special case to handle them
-        elsif col.instance_of?(Pawn) && col.player == 'black'
-          print " #{col.black} |" if col.player == 'black'
-        else
-          print " #{col.white}  |" if col.player == 'white'
-          print " #{col.black}  |" if col.player == 'black'
-        end
+        print_squares(col)
       end
 
       puts "\n  -----------------------------------------"
 
       row_number -= 1
     end
+
     puts '    1    2    3    4    5    6    7    8'
   end
 
   private
+
+  def print_squares(col)
+    if col.nil?
+      print "#{col}    |"
+    # for some reason black pawns are bigger than the other pieces and I need a special case to handle them
+    elsif col.instance_of?(Pawn) && col.player == 'black'
+      print " #{col.black} |" if col.player == 'black'
+    else
+      print " #{col.white}  |" if col.player == 'white'
+      print " #{col.black}  |" if col.player == 'black'
+    end
+  end
 
   def place_pawns
     board[1].map!.with_index do |_space, index|

@@ -16,13 +16,13 @@ module Blockable
     king_row = king.row
     king_col = king.col
 
+    # all of these conditionals determine the direction from which the check is coming from so the appropriate diagonal
+    # can be verified
     return lower_diagonal_right_blockable?(checker, king) if checker_row > king_row && checker_col > king_col
     return lower_diagonal_left_blockable?(checker, king) if checker_row > king_row && checker_col < king_col
 
     return upper_diagonal_left_blockable?(checker, king) if checker_row < king_row && checker_col > king_col
-    return upper_diagonal_right_blockable?(checker, king) if checker_row < king_row && checker_col < king_col
-
-    blockable_by_pawn?(king)
+    upper_diagonal_right_blockable?(checker, king) if checker_row < king_row && checker_col < king_col
   end
 
   def lower_diagonal_right_blockable?(checker, king)
@@ -128,7 +128,6 @@ module Blockable
     king_col = king.col
 
     return right_horizontal_blockable?(checker, king) if checker_col < king_col
-
     left_horizontal_blockable?(checker, king) if checker_col > king_col
   end
 
@@ -168,7 +167,6 @@ module Blockable
     king_row = king.row
 
     return upper_vertical_blockable?(checker, king) if checker_row < king_row
-
     lower_diagonal_left_blockable?(checker, king) if checker_row > king_row
   end
 
