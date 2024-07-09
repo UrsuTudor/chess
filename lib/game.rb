@@ -3,9 +3,11 @@ require_relative 'blockable'
 require_relative 'jsonable'
 require_relative 'saveable'
 require_relative 'checkable'
+require_relative 'validateable'
 require 'json'
 require 'erb'
 
+# tracks board state, turn and holds the methods needed to play the game
 class Game
   def initialize
     @board = Board.new
@@ -20,6 +22,7 @@ class Game
   include JSONable
   include Saveable
   include Checkable
+  include Validateable
 
   def play
     board.display_board
@@ -30,7 +33,7 @@ by typing the word in the console at any point."
     loop do
       puts "\n#{turn.capitalize}'s turn!"
       puts "\nWhat piece would you like to move?"
-      player_action = player_input
+      player_action = validate_player_input
 
       break puts "\nYou have agreed to a draw!" if player_action == 'draw'
       next if save_or_load?(player_action)
@@ -52,7 +55,7 @@ by typing the word in the console at any point."
       if valid_piece?(piece)
         piece
       else
-        new_input = player_input
+        new_input = validate_player_input
         piece = board.board[new_input[0]][new_input[1]]
       end
 
@@ -70,7 +73,7 @@ by typing the word in the console at any point."
     puts 'Where would you like to move the piece?'
 
     loop do
-      coordinates = player_input
+      coordinates = validate_player_input
       next puts 'That move is illegal.' unless valid_coordinates?(piece, coordinates)
 
       update_board(piece, coordinates[0], coordinates[1])
@@ -90,7 +93,7 @@ by typing the word in the console at any point."
 
     puts 'Select the same piece with a different move or a different piece, please!'
 
-    new_input = player_input
+    new_input = validate_player_input
     move_piece(new_input)
   end
 
@@ -138,42 +141,6 @@ by typing the word in the console at any point."
 
     board[row][3] = Rook.new(board[row][0].player, row, 3)
     board[row][0] = nil
-  end
-
-  def player_input
-    input = gets.chomp.split(',')
-
-    input = input.join.downcase if input.length == 1
-
-    if input =='draw' || input == 'save' || input == 'load'
-      input
-    elsif input.length == 2
-      input.map { |num| num.to_i - 1 }
-    else
-      puts "Appropriate input is 'draw', 'save', 'load' or coordinates in this format: x,y"
-      player_input
-    end
-  end
-
-  def valid_coordinates?(piece, coordinates)
-    return false unless piece.possible_moves(board.board).include?(coordinates)
-
-    true
-  end
-
-  def valid_piece?(piece)
-    if piece.nil?
-      puts 'That spot is empty!'
-      return false
-    elsif piece.possible_moves(board.board).empty?
-      puts 'That piece cannot move at the moment!'
-      return false
-    elsif piece.player != turn
-      puts 'That piece does not belong to you!'
-      return false
-    end
-
-    true
   end
 
   def next_turn

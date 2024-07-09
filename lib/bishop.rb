@@ -2,7 +2,7 @@ require_relative 'piece'
 require_relative 'moveable'
 require_relative 'jsonable'
 
-# manages the bishop piece
+# tracks player, position and contains the methods that make it possible to move the bishop legally
 class Bishop < Piece
   def initialize(player, row, col)
     super(player, row, col)
