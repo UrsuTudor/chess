@@ -218,13 +218,18 @@ by typing the word in the console at any point."
   end
 
   def player_input
-    coordinates = gets.chomp.split(',')
+    input = gets.chomp.split(',')
 
-    return coordinates.join if coordinates.join == 'draw'
-    return coordinates.join if coordinates.join == 'save'
-    return coordinates.join if coordinates.join == 'load'
+    input = input.join.downcase if input.length == 1
 
-    coordinates.map { |num| num.to_i - 1 }
+    if input =='draw' || input == 'save' || input == 'load'
+      input
+    elsif input.length == 2
+      input.map { |num| num.to_i - 1 }
+    else
+      puts "Appropriate input is 'draw', 'save', 'load' or coordinates in this format: x,y"
+      player_input
+    end
   end
 
   def valid_coordinates?(piece, coordinates)
