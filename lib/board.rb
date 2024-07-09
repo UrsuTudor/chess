@@ -27,7 +27,7 @@ class Board
       print "#{row_number} |"
 
       row.each do |col|
-        print_squares(col)
+        print_square(col)
       end
 
       puts "\n  -----------------------------------------"
@@ -40,7 +40,7 @@ class Board
 
   private
 
-  def print_squares(col)
+  def print_square(col)
     if col.nil?
       print "#{col}    |"
     # for some reason black pawns are bigger than the other pieces and I need a special case to handle them

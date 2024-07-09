@@ -1,6 +1,7 @@
 require_relative 'board'
 require_relative 'blockable'
 require_relative 'jsonable'
+require_relative 'saveable'
 require 'json'
 require 'erb'
 
@@ -16,6 +17,7 @@ class Game
 
   include Blockable
   include JSONable
+  include Saveable
 
   def play
     board.display_board
@@ -26,68 +28,39 @@ by typing the word in the console at any point."
     loop do
       puts "\n#{turn.capitalize}'s turn!"
       puts "\nWhat piece would you like to move?"
-
       player_action = player_input
 
-      return puts 'You have agreed to a draw!' if player_action == 'draw'
-
-      if player_action == 'save'
-        save_game
-        puts 'Your game was saved!'
-        next
-      elsif player_action == 'load'
-        load_game
-        board.display_board
-        puts 'Last save was loaded!'
-        next
-      end
+      break puts "\nYou have agreed to a draw!" if player_action == 'draw'
+      next if save_or_load?(player_action)
 
       move_piece(player_action)
-
       board.display_board
 
-      if white_king.in_check?(board.board)
-        puts 'check'
-        break puts 'Check mate, black wins!' if white_check_mate?
-      end
-
-      if black_king.in_check?(board.board)
-        puts 'check'
-        break puts 'Check mate, white wins!' if black_check_mate?
-      end
+      break if check_mate?
+      check?
 
       next_turn
     end
   end
 
-  def save_game
-    serialized_game = JSON.dump({ board: board.board.each do |row|
-      row.each do |col|
-        col.to_json
-      end
-    end,
-                                  white_king:,
-                                  black_king:,
-                                  turn: })
-
-    File.open('save.json', 'w') do |file|
-      file.puts serialized_game
+  def check?
+    if white_king.in_check?(board.board)
+      puts "\nCheck!"
+    elsif black_king.in_check?(board.board)
+      puts "\nCheck!"
     end
   end
 
-  def load_game
-    save_file = File.read('save.json')
-    data = JSON.parse(save_file)
-
-    board.board = data['board'].map do |row|
-      row.map do |col|
-        class_from_json(col) unless col.nil?
-      end
+  def check_mate?
+    if white_check_mate?
+      puts "\nCheck mate, black wins!"
+      return true
+    elsif black_check_mate?
+      puts "\nCheck mate, white wins!"
+      return true
     end
 
-    self.white_king = class_from_json(data['white_king'])
-    self.black_king = class_from_json(data['black_king'])
-    self.turn = data['turn']
+    false
   end
 
   def checker_can_be_taken?(checker)
@@ -110,6 +83,7 @@ by typing the word in the console at any point."
 
   def black_check_mate?
     checker = black_king.in_check?(board.board)
+    return if checker == false
 
     if black_king.possible_moves(board.board).empty?
       return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, black_king)
@@ -160,8 +134,10 @@ by typing the word in the console at any point."
 
   def choose_piece(input)
     loop do
-      if valid_piece?(board.board[input[0]][input[1]])
-        piece = board.board[input[0]][input[1]]
+      piece = board.board[input[0]][input[1]]
+
+      if valid_piece?(piece)
+        piece
       else
         new_input = player_input
         piece = board.board[new_input[0]][new_input[1]]
