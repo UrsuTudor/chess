@@ -20,11 +20,12 @@ class Game
   def play
     board.display_board
 
-    puts "\nYou can ask for a draw, save or load your latest save
-by typing the game by typing the word in the console."
+    puts "\nYou can ask for a draw, save or to load your latest save
+by typing the word in the console at any point."
 
     loop do
       puts "\n#{turn.capitalize}'s turn!"
+      puts "\nWhat piece would you like to move?"
 
       player_action = player_input
 
@@ -119,6 +120,8 @@ by typing the game by typing the word in the console."
 
   def move_piece(input)
     piece = choose_piece(input)
+    row_backup = piece.row
+    col_backup = piece.col
 
     puts 'Where would you like to move the piece?'
 
@@ -126,10 +129,9 @@ by typing the game by typing the word in the console."
       coordinates = player_input
       next puts 'That move is illegal.' unless valid_coordinates?(piece, coordinates)
 
-      board_backup = board.board
       update_board(piece, coordinates[0], coordinates[1])
 
-      different_move(board_backup) if still_in_check?
+      different_move(piece, row_backup, col_backup, coordinates) if still_in_check?
       break
     end
   end
@@ -143,8 +145,15 @@ by typing the game by typing the word in the console."
     false
   end
 
-  def different_move(board_backup)
-    board.board = board_backup
+  def different_move(old_piece, row_backup, col_backup, old_coordinates)
+    old_piece.row = row_backup
+    old_piece.col = col_backup
+
+    board.board[row_backup][col_backup] = old_piece
+    board.board[old_coordinates[0]][old_coordinates[1]] = nil
+
+    puts 'Select the same piece with a different move or a different piece, please!'
+
     new_input = player_input
     move_piece(new_input)
   end
@@ -154,7 +163,6 @@ by typing the game by typing the word in the console."
       if valid_piece?(board.board[input[0]][input[1]])
         piece = board.board[input[0]][input[1]]
       else
-        puts 'What piece would you like to move?'
         new_input = player_input
         piece = board.board[new_input[0]][new_input[1]]
       end
