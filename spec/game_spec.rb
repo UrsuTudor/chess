@@ -1,5 +1,7 @@
 require './lib/game'
 
+# these are outdated tests that were used to test the methods before they were moved into special helpers for the Game
+# class
 describe Game do
   subject(:game) { described_class.new }
   let(:board) { game.board }

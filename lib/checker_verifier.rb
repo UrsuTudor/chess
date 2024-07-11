@@ -2,7 +2,13 @@ require 'pry-byebug'
 
 # includes methods that make is possible to determine whether or not the path of a checker can be blocked;
 # also contains the method that checks if the checker can be taken
-module Blockable
+class CheckerVerifier
+  def initialize(board)
+    @board = board
+  end
+
+  attr_reader :board
+
   def checker_can_be_taken?(checker)
     return if checker == false
 

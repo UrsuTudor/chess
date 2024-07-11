@@ -1,4 +1,4 @@
-require_relative 'blockable'
+require_relative 'checker_verifier'
 
 # contains methods used by the Game class to determine whether or not the king is in check/check mate
 class CheckFinder
@@ -7,11 +7,10 @@ class CheckFinder
     @white_king = white_king
     @black_king = black_king
     @turn = turn
+    @checker_verifier = CheckerVerifier.new(board)
   end
 
-  attr_accessor :turn, :board, :white_king, :black_king
-
-  include Blockable
+  attr_accessor :turn, :board, :white_king, :black_king, :checker_verifier
 
   def check?
     if white_king.in_check?(board.board)
@@ -38,7 +37,8 @@ class CheckFinder
     return false if checker == false
 
     if white_king.possible_moves(board.board).empty?
-      return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, white_king)
+      return true unless checker_verifier.checker_can_be_taken?(checker) ||
+                         checker_verifier.checker_path_can_be_blocked?(checker, white_king)
     end
 
     false
@@ -49,7 +49,8 @@ class CheckFinder
     return false if checker == false
 
     if black_king.possible_moves(board.board).empty?
-      return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, black_king)
+      return true unless checker_verifier.checker_can_be_taken?(checker) ||
+                         checker_verifier.checker_path_can_be_blocked?(checker, black_king)
     end
 
     false
