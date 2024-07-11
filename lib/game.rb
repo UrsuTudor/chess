@@ -31,6 +31,7 @@ class Game
 by typing the word in the console at any point."
 
     loop do
+      p white_king
       puts "\n#{turn.capitalize}'s turn!"
       puts "\nWhat piece would you like to move?"
       player_action = validate_player_input
@@ -40,6 +41,8 @@ by typing the word in the console at any point."
 
       move_piece(player_action)
       board.display_board
+
+      p white_king
 
       break if check_mate?
       check?
@@ -98,15 +101,15 @@ by typing the word in the console at any point."
   end
 
   def update_board(piece, row, col)
-    # only moves the rook, the regular function will move the king
-    handle_king(piece, row, col) if piece.instance_of?(King)
-
+    
     board.board[row][col] = piece
     board.board[piece.row][piece.col] = nil
 
     piece.row = row
     piece.col = col
 
+    # only moves the rook, the regular function will move the king
+    handle_king(piece, row, col) if piece.instance_of?(King)
     handle_pawn(piece) if piece.instance_of?(Pawn)
   end
 
@@ -119,8 +122,17 @@ by typing the word in the console at any point."
     pawn.promote_pawn_white(board.board)
   end
 
+  def update_game_king(king)
+    if king.player == 'white'
+      self.white_king = king
+    else
+      self.black_king = king
+    end
+  end
+
   # used for castles
   def handle_king(king, row, col)
+    update_game_king(king)
     return if king.has_moved == true
 
     do_castle_right(board.board, row, col) if king.castle_right?(board.board)

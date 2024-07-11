@@ -4,6 +4,8 @@ require 'pry-byebug'
 # also contains the method that checks if the checker can be taken
 module Blockable
   def checker_can_be_taken?(checker)
+    return if checker == false
+
     simulated_king = King.new(checker.player, checker.row, checker.col)
 
     return true if simulated_king.in_check?(board.board) || simulated_king.check_from_king?(board.board)
