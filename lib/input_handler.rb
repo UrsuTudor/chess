@@ -1,6 +1,21 @@
+require_relative 'saveable'
+require_relative 'jsonable'
+
 # contains methods used to validate player input, whether it's checking the initial input, the piece the player selected
 # or the coordinates the player wants to move it at
-module Validateable
+class InputHandler
+  def initialize(board, white_king, black_king, turn)
+    @board = board
+    @white_king = white_king
+    @black_king = black_king
+    @turn = turn
+  end
+
+  attr_reader :board, :turn, :white_king, :black_king
+
+  include Saveable
+  include JSONable
+
   def validate_player_input
     input = gets.chomp.split(',')
 
@@ -35,5 +50,18 @@ module Validateable
     end
 
     true
+  end
+
+  def save_or_load?(player_action, game)
+    if player_action == 'save'
+      save_game
+      puts "\nYour game was saved!"
+      true
+    elsif player_action == 'load'
+      load_game(game)
+      board.display_board
+      puts "\nLast save was loaded!"
+      true
+    end
   end
 end

@@ -3,7 +3,7 @@ require_relative 'blockable'
 require_relative 'jsonable'
 require_relative 'saveable'
 require_relative 'check_finder'
-require_relative 'validateable'
+require_relative 'input_handler'
 require 'json'
 require 'erb'
 
@@ -15,14 +15,14 @@ class Game
     @black_king = board.board[7][4]
     @turn = 'white'
     @check_finder = CheckFinder.new(board, white_king, black_king, turn)
+    @input_handler = InputHandler.new(board, white_king, black_king, turn)
   end
 
-  attr_accessor :turn, :board, :white_king, :black_king, :check_finder
+  attr_accessor :turn, :board, :white_king, :black_king, :check_finder, :input_handler
 
   include Blockable
   include JSONable
   include Saveable
-  include Validateable
 
   def play
     board.display_board
@@ -31,45 +31,45 @@ class Game
 by typing the word in the console at any point."
 
     loop do
-      update_checkers
+      update_helpers
       puts "\n#{turn.capitalize}'s turn!"
       puts "\nWhat piece would you like to move?"
-      player_action = validate_player_input
+      player_action = input_handler.validate_player_input
 
       break puts "\nYou have agreed to a draw!" if player_action == 'draw'
-      next if save_or_load?(player_action)
+      next if input_handler.save_or_load?(player_action, self)
 
       move_piece(player_action)
       board.display_board
 
-      # we need #next_turn here so that the update_checkers method updates the turn as well; if we don't update the turn
+      # we need #next_turn here so that the update_helpers method updates the turn as well; if we don't update the turn
       # before verifying for a check/check_mate the turn of CheckFinder will still be the opposite turn of the current
       # player, so black will not be able to check white, because #still_in_check? will handle black's move while it's
       # turn instance variable is still white
       next_turn
-      update_checkers
+      update_helpers
 
       break if check_finder.check_mate?
       check_finder.check?
     end
   end
 
-  def update_checkers
+  def update_helpers
     self.check_finder = CheckFinder.new(board, white_king, black_king, turn)
+    self.input_handler = InputHandler.new(board, white_king, black_king, turn)
   end
 
   def choose_piece(input)
     loop do
       piece = board.board[input[0]][input[1]]
 
-      if valid_piece?(piece)
+      if input_handler.valid_piece?(piece)
         piece
       else
-        new_input = validate_player_input
-        piece = board.board[new_input[0]][new_input[1]]
+        return
       end
 
-      next unless valid_piece?(piece)
+      next unless input_handler.valid_piece?(piece)
 
       return piece
     end
@@ -83,8 +83,8 @@ by typing the word in the console at any point."
     puts 'Where would you like to move the piece?'
 
     loop do
-      coordinates = validate_player_input
-      next puts 'That move is illegal.' unless valid_coordinates?(piece, coordinates)
+      coordinates = input_handler.validate_player_input
+      next puts 'That move is illegal.' unless input_handler.valid_coordinates?(piece, coordinates)
 
       update_board(piece, coordinates[0], coordinates[1])
 
@@ -103,7 +103,7 @@ by typing the word in the console at any point."
 
     puts 'Select the same piece with a different move or a different piece, please!'
 
-    new_input = validate_player_input
+    new_input = input_handler.validate_player_input
     move_piece(new_input)
   end
 
