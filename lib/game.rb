@@ -1,5 +1,4 @@
 require_relative 'board'
-require_relative 'blockable'
 require_relative 'saveable'
 require_relative 'check_finder'
 require_relative 'input_handler'
@@ -17,7 +16,6 @@ class Game
 
   attr_accessor :turn, :board, :white_king, :black_king, :check_finder, :input_handler
 
-  include Blockable
   include Saveable
 
   def play
