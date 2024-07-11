@@ -1,11 +1,8 @@
 require_relative 'board'
 require_relative 'blockable'
-require_relative 'jsonable'
 require_relative 'saveable'
 require_relative 'check_finder'
 require_relative 'input_handler'
-require 'json'
-require 'erb'
 
 # tracks board state, turn and holds the methods needed to play the game
 class Game
@@ -21,7 +18,6 @@ class Game
   attr_accessor :turn, :board, :white_king, :black_king, :check_finder, :input_handler
 
   include Blockable
-  include JSONable
   include Saveable
 
   def play
@@ -31,7 +27,7 @@ class Game
 by typing the word in the console at any point."
 
     loop do
-      # this needs to be here for when a old save is loaded
+      # this needs to be here for when an old save is loaded
       update_helpers
 
       puts "\n#{turn.capitalize}'s turn!"
