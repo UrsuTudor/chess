@@ -31,7 +31,9 @@ class Game
 by typing the word in the console at any point."
 
     loop do
+      # this needs to be here for when a old save is loaded
       update_helpers
+
       puts "\n#{turn.capitalize}'s turn!"
       puts "\nWhat piece would you like to move?"
       player_action = input_handler.validate_player_input
@@ -42,10 +44,6 @@ by typing the word in the console at any point."
       move_piece(player_action)
       board.display_board
 
-      # we need #next_turn here so that the update_helpers method updates the turn as well; if we don't update the turn
-      # before verifying for a check/check_mate the turn of CheckFinder will still be the opposite turn of the current
-      # player, so black will not be able to check white, because #still_in_check? will handle black's move while it's
-      # turn instance variable is still white
       next_turn
       update_helpers
 
@@ -90,6 +88,8 @@ by typing the word in the console at any point."
       next puts 'That move is illegal.' unless input_handler.valid_coordinates?(piece, coordinates)
 
       update_board(piece, coordinates[0], coordinates[1])
+      # the kings need to be updated for #still_in_check? to work properly
+      update_helpers
 
       different_move(piece, row_backup, col_backup, coordinates) if check_finder.still_in_check?
       break
