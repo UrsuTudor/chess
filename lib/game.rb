@@ -2,7 +2,7 @@ require_relative 'board'
 require_relative 'blockable'
 require_relative 'jsonable'
 require_relative 'saveable'
-require_relative 'checkable'
+require_relative 'check_finder'
 require_relative 'validateable'
 require 'json'
 require 'erb'
@@ -14,14 +14,14 @@ class Game
     @white_king = board.board[0][4]
     @black_king = board.board[7][4]
     @turn = 'white'
+    @check_finder = CheckFinder.new(board, white_king, black_king, turn)
   end
 
-  attr_accessor :turn, :board, :white_king, :black_king
+  attr_accessor :turn, :board, :white_king, :black_king, :check_finder
 
   include Blockable
   include JSONable
   include Saveable
-  include Checkable
   include Validateable
 
   def play
@@ -31,7 +31,7 @@ class Game
 by typing the word in the console at any point."
 
     loop do
-      p white_king
+      update_checkers
       puts "\n#{turn.capitalize}'s turn!"
       puts "\nWhat piece would you like to move?"
       player_action = validate_player_input
@@ -42,13 +42,20 @@ by typing the word in the console at any point."
       move_piece(player_action)
       board.display_board
 
-      p white_king
-
-      break if check_mate?
-      check?
-
+      # we need #next_turn here so that the update_checkers method updates the turn as well; if we don't update the turn
+      # before verifying for a check/check_mate the turn of CheckFinder will still be the opposite turn of the current
+      # player, so black will not be able to check white, because #still_in_check? will handle black's move while it's
+      # turn instance variable is still white
       next_turn
+      update_checkers
+
+      break if check_finder.check_mate?
+      check_finder.check?
     end
+  end
+
+  def update_checkers
+    self.check_finder = CheckFinder.new(board, white_king, black_king, turn)
   end
 
   def choose_piece(input)
@@ -81,7 +88,7 @@ by typing the word in the console at any point."
 
       update_board(piece, coordinates[0], coordinates[1])
 
-      different_move(piece, row_backup, col_backup, coordinates) if still_in_check?
+      different_move(piece, row_backup, col_backup, coordinates) if check_finder.still_in_check?
       break
     end
   end

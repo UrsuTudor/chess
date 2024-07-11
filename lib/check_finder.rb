@@ -1,5 +1,18 @@
+require_relative 'blockable'
+
 # contains methods used by the Game class to determine whether or not the king is in check/check mate
-module Checkable
+class CheckFinder
+  def initialize(board, white_king, black_king, turn)
+    @board = board
+    @white_king = white_king
+    @black_king = black_king
+    @turn = turn
+  end
+
+  attr_accessor :turn, :board, :white_king, :black_king
+
+  include Blockable
+
   def check?
     if white_king.in_check?(board.board)
       puts "\nCheck!"
