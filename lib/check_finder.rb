@@ -35,6 +35,7 @@ class CheckFinder
 
   def white_check_mate?
     checker = white_king.in_check?(board.board)
+    return false if checker == false
 
     if white_king.possible_moves(board.board).empty?
       return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, white_king)
@@ -45,7 +46,7 @@ class CheckFinder
 
   def black_check_mate?
     checker = black_king.in_check?(board.board)
-    return if checker == false
+    return false if checker == false
 
     if black_king.possible_moves(board.board).empty?
       return true unless checker_can_be_taken?(checker) || checker_path_can_be_blocked?(checker, black_king)

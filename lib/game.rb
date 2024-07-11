@@ -60,23 +60,26 @@ by typing the word in the console at any point."
   end
 
   def choose_piece(input)
+    piece = board.board[input[0]][input[1]]
+
+    return piece if input_handler.valid_piece?(piece)
+
+    different_piece
+  end
+
+  def different_piece
     loop do
-      piece = board.board[input[0]][input[1]]
+      new_input = input_handler.validate_player_input
+      next puts 'You cannot perform any other action until you move.' if new_input.instance_of?(String)
 
-      if input_handler.valid_piece?(piece)
-        piece
-      else
-        return
-      end
-
-      next unless input_handler.valid_piece?(piece)
-
-      return piece
+      piece = board.board[new_input[0]][new_input[1]]
+      return piece if input_handler.valid_piece?(piece)
     end
   end
 
   def move_piece(input)
     piece = choose_piece(input)
+
     row_backup = piece.row
     col_backup = piece.col
 
@@ -108,7 +111,6 @@ by typing the word in the console at any point."
   end
 
   def update_board(piece, row, col)
-    
     board.board[row][col] = piece
     board.board[piece.row][piece.col] = nil
 
