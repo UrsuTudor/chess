@@ -52,6 +52,15 @@ class InputHandler
     true
   end
 
+  def draw?(player_action)
+    if player_action == 'draw'
+      puts "\nYou have agreed to a draw!"
+      true
+    else
+      false
+    end
+  end
+
   def save_or_load?(player_action, game)
     if player_action == 'save'
       save_game

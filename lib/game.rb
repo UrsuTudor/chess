@@ -19,24 +19,24 @@ class Game
   include Saveable
 
   def play
-    board.display_board
-
     puts "\nYou can ask for a draw, save or to load your latest save
 by typing the word in the console at any point."
 
     loop do
+      board.display_board
+
       # this needs to be here for when an old save is loaded
       update_helpers
 
-      puts "\n#{turn}'s turn!"
-      puts "\nWhat piece would you like to move?"
+      puts "\n#{turn}'s turn!
+      \nWhat piece would you like to move?"
+
       player_action = input_handler.validate_player_input
 
-      break puts "\nYou have agreed to a draw!" if player_action == 'draw'
+      break if input_handler.draw?(player_action)
       next if input_handler.save_or_load?(player_action, self)
 
       make_move(player_action)
-      board.display_board
 
       next_turn
       update_helpers
