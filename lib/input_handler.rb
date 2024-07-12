@@ -44,7 +44,7 @@ class InputHandler
     elsif piece.possible_moves(board.board).empty?
       puts 'That piece cannot move at the moment!'
       return false
-    elsif piece.player != turn
+    elsif piece.player != turn.downcase
       puts 'That piece does not belong to you!'
       return false
     end

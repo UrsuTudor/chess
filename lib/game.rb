@@ -9,7 +9,7 @@ class Game
     @board = Board.new
     @white_king = board.board[0][4]
     @black_king = board.board[7][4]
-    @turn = 'white'
+    @turn = 'White'
     @check_finder = CheckFinder.new(board, white_king, black_king, turn)
     @input_handler = InputHandler.new(board, white_king, black_king, turn)
   end
@@ -28,7 +28,7 @@ by typing the word in the console at any point."
       # this needs to be here for when an old save is loaded
       update_helpers
 
-      puts "\n#{turn.capitalize}'s turn!"
+      puts "\n#{turn}'s turn!"
       puts "\nWhat piece would you like to move?"
       player_action = input_handler.validate_player_input
 
@@ -174,10 +174,10 @@ by typing the word in the console at any point."
   end
 
   def next_turn
-    self.turn = if turn == 'white'
-                  'black'
+    self.turn = if turn == 'White'
+                  'Black'
                 else
-                  'white'
+                  'White'
                 end
   end
 end
