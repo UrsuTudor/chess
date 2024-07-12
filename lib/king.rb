@@ -38,7 +38,8 @@ class King < Piece
   end
 
   def castles(board)
-    [row, col + 2] if castle_right?(board)
+    return [row, col + 2] if castle_right?(board)
+
     [row, col - 2] if castle_left?(board)
   end
 
@@ -80,15 +81,21 @@ class King < Piece
   end
 
   def castle_right?(board)
-    return false if has_moved == true
-    return true if row == 7 || row.zero? && board[row][col + 3].instance_of?(Rook)
+    king_right = right_horizontal(board)
+
+    return false if has_moved == true || king_right.length < 2
+    return true if row == 7 && board[row][col - 4].instance_of?(Rook) ||
+                   row.zero? && board[row][col - 4].instance_of?(Rook)
 
     false
   end
 
   def castle_left?(board)
-    return false if has_moved == true
-    return true if row == 7 || row.zero? && board[row][col - 4].instance_of?(Rook)
+    king_left = left_horizontal(board)
+
+    return false if has_moved == true || king_left.length < 3
+    return true if row == 7 && board[row][col + 3].instance_of?(Rook) ||
+                   row.zero? && board[row][col + 3].instance_of?(Rook)
 
     false
   end
@@ -126,9 +133,8 @@ class King < Piece
       # simulates a scenario in which the king's position is the same as the queen's position
       return false if path[0] == self.row && path[1] == self.col
 
-      # it is not needed to check whether or not the Rook is an ally because an allied rook would never enter the array
-      #  of valid moves
-      return piece if piece.instance_of?(Rook) || piece.instance_of?(Queen)
+      return piece if piece.instance_of?(Rook) && opponent_piece?(board, piece.row, piece.col) ||
+                      piece.instance_of?(Queen) && opponent_piece?(board, piece.row, piece.col)
     end
 
     false

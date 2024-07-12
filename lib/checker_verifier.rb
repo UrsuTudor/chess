@@ -9,6 +9,8 @@ class CheckerVerifier
 
   attr_reader :board
 
+  # this simulates a king with the same position as the checker; if the simulated king would be in check, it means the
+  # checker can be taken
   def checker_can_be_taken?(checker)
     return if checker == false
 
@@ -34,23 +36,23 @@ class CheckerVerifier
     king_row = king.row
     king_col = king.col
 
-    # all of these conditionals determine the direction from which the check is coming from so the appropriate diagonal
+    # all of these conditionals determine the direction from which the check is coming from, so the appropriate diagonal
     # can be verified
-    return lower_diagonal_right_blockable?(checker, king) if checker_row > king_row && checker_col > king_col
-    return lower_diagonal_left_blockable?(checker, king) if checker_row > king_row && checker_col < king_col
+    return lower_half_of_right_angled_diagonal_blockable?(checker, king) if checker_row > king_row && checker_col > king_col
+    return lower_half_of_left_angled_diagonal_blockable?(checker, king) if checker_row > king_row && checker_col < king_col
 
-    return upper_diagonal_left_blockable?(checker, king) if checker_row < king_row && checker_col > king_col
-    upper_diagonal_right_blockable?(checker, king) if checker_row < king_row && checker_col < king_col
+    return upper_half_of_left_angled_diagonal_blockable?(checker, king) if checker_row < king_row && checker_col > king_col
+    upper_half_of_right_angled_diagonal_blockable?(checker, king) if checker_row < king_row && checker_col < king_col
   end
 
-  def lower_diagonal_right_blockable?(checker, king)
+  def lower_half_of_right_angled_diagonal_blockable?(checker, king)
     check_path = checker.descending_right_diagonal(board.board)
 
     check_path.each do |square|
       simulated_king = King.new(king.opposing_king(king), square[0], square[1])
 
-      # we want to exclude situations in which the simulated king would be in check from a pawn because that spot is
-      # empty on the actual board and the pawn would not be able to move diagonally to block the check
+      # we exclude situations in which the simulated king would be in check from a pawn because that spot is empty
+      # on the actual board and the pawn would not be able to move diagonally to block the check
       return true if simulated_king.in_check?(board.board) &&
                      !simulated_king.in_check?(board.board).instance_of?(Pawn) ||
                      blockable_by_pawn?(simulated_king)
@@ -59,7 +61,7 @@ class CheckerVerifier
     false
   end
 
-  def lower_diagonal_left_blockable?(checker, king)
+  def lower_half_of_left_angled_diagonal_blockable?(checker, king)
     check_path = checker.descending_left_diagonal(board.board)
 
     check_path.each do |square|
@@ -73,7 +75,7 @@ class CheckerVerifier
     false
   end
 
-  def upper_diagonal_left_blockable?(checker, king)
+  def upper_half_of_left_angled_diagonal_blockable?(checker, king)
     check_path = checker.ascending_left_diagonal(board.board)
 
     check_path.each do |square|
@@ -87,7 +89,7 @@ class CheckerVerifier
     false
   end
 
-  def upper_diagonal_right_blockable?(checker, king)
+  def upper_half_of_right_angled_diagonal_blockable?(checker, king)
     check_path = checker.ascending_right_diagonal(board.board)
 
     check_path.each do |square|
@@ -132,9 +134,9 @@ class CheckerVerifier
   end
 
   # used by blockable_by_pawn?
-  def movable_unmoved_pawn?(unmoved_pawn, square_ahead_of_pawn)
-    unmoved_pawn.instance_of?(Pawn) &&
-      !unmoved_pawn.has_moved &&
+  def movable_unmoved_pawn?(pawn, square_ahead_of_pawn)
+    pawn.instance_of?(Pawn) &&
+      !pawn.has_moved &&
       square_ahead_of_pawn.nil?
   end
 
@@ -185,7 +187,7 @@ class CheckerVerifier
     king_row = king.row
 
     return upper_vertical_blockable?(checker, king) if checker_row < king_row
-    lower_diagonal_left_blockable?(checker, king) if checker_row > king_row
+    lower_half_of_left_angled_diagonal_blockable?(checker, king) if checker_row > king_row
   end
 
   def upper_vertical_blockable?(checker, king)

@@ -35,7 +35,7 @@ by typing the word in the console at any point."
       break puts "\nYou have agreed to a draw!" if player_action == 'draw'
       next if input_handler.save_or_load?(player_action, self)
 
-      move_piece(player_action)
+      make_move(player_action)
       board.display_board
 
       next_turn
@@ -69,9 +69,11 @@ by typing the word in the console at any point."
     end
   end
 
-  def move_piece(input)
+  def make_move(input)
     piece = choose_piece(input)
 
+    # needed to change the coordinates of the piece back to their original ones if #still_in_check? returns true and
+    # there is a need to roll back
     row_backup = piece.row
     col_backup = piece.col
 
@@ -90,29 +92,31 @@ by typing the word in the console at any point."
     end
   end
 
-  # used by move_piece when the king would still be in check after the move chosen by the player
+  # used by make_move when the king would still be in check after the move chosen by the player
   def different_move(old_piece, row_backup, col_backup, old_coordinates)
+    # reseting the old piece's data
     old_piece.row = row_backup
     old_piece.col = col_backup
 
+    # reseting the board
     board.board[row_backup][col_backup] = old_piece
     board.board[old_coordinates[0]][old_coordinates[1]] = nil
 
     puts 'Select the same piece with a different move or a different piece, please!'
 
     new_input = input_handler.validate_player_input
-    move_piece(new_input)
+    make_move(new_input)
   end
 
   def update_board(piece, row, col)
+    return handle_king(piece, row, col) if piece.instance_of?(King)
+
     board.board[row][col] = piece
     board.board[piece.row][piece.col] = nil
 
     piece.row = row
     piece.col = col
 
-    # only moves the rook, the regular function will move the king
-    handle_king(piece, row, col) if piece.instance_of?(King)
     handle_pawn(piece) if piece.instance_of?(Pawn)
   end
 
@@ -125,6 +129,27 @@ by typing the word in the console at any point."
     pawn.promote_pawn_white(board.board)
   end
 
+  # in the case of a castle, this only moves the rook; the regular #move_piece will move the king
+  # the board can only be updated after the check for a castle is made, because the check uses the board, which is why
+  # the #handle_king method needs to do its own board update after it performs the castle
+  def handle_king(king, row, col)
+    board = self.board.board
+
+    do_castle_right(board, row, col) if king.castle_right?(board)
+    do_castle_left(board, row, col) if king.castle_left?(board)
+
+    board[row][col] = king
+    board[king.row][king.col] = nil
+
+    king.row = row
+    king.col = col
+
+    king.has_moved = true
+    update_game_king(king)
+  end
+
+  # the kings do not update themselves automatically, but it is important to have them updated for the methods that
+  # look for checks
   def update_game_king(king)
     if king.player == 'white'
       self.white_king = king
@@ -133,17 +158,7 @@ by typing the word in the console at any point."
     end
   end
 
-  # used for castles
-  def handle_king(king, row, col)
-    update_game_king(king)
-    return if king.has_moved == true
-
-    do_castle_right(board.board, row, col) if king.castle_right?(board.board)
-    do_castle_left(board.board, row, col) if king.castle_left?(board.board)
-
-    king.has_moved = true
-  end
-
+  # deleting the old Rook and placing a new one is easier and faster than creating a new movement exception for the Rook
   def do_castle_right(board, row, col)
     return unless row == 7 && col == 6 || row.zero? && col == 6
 
