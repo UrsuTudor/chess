@@ -1,5 +1,4 @@
 require_relative 'board'
-require_relative 'saveable'
 require_relative 'check_finder'
 require_relative 'input_handler'
 
@@ -16,17 +15,15 @@ class Game
 
   attr_accessor :turn, :board, :white_king, :black_king, :check_finder, :input_handler
 
-  include Saveable
-
   def play
     puts "\nYou can ask for a draw, save or to load your latest save
 by typing the word in the console at any point."
 
     loop do
-      board.display_board
-
       # this needs to be here for when an old save is loaded
       update_helpers
+
+      board.display_board
 
       puts "\n#{turn}'s turn!
       \nWhat piece would you like to move?"
@@ -84,7 +81,8 @@ by typing the word in the console at any point."
       next puts 'That move is illegal.' unless input_handler.valid_coordinates?(piece, coordinates)
 
       update_board(piece, coordinates[0], coordinates[1])
-      # the kings need to be updated for #still_in_check? to work properly
+
+      # the kings need to be updated for #still_in_check? of CheckFinder to work properly
       update_helpers
 
       different_move(piece, row_backup, col_backup, coordinates) if check_finder.still_in_check?
@@ -123,15 +121,16 @@ by typing the word in the console at any point."
   # diferent behaviour depending on whether or not the pawn has moved or has reached the finish
   def handle_pawn(pawn)
     pawn.has_moved = true
-    # having them like this is not a problem because a white pawn will never get to row 7 and a black pawn will never
-    # get to row 0, so the methods will simply return if the pawn does not belong to the specified player
+
+    # having them without an if statement is not a problem because a white pawn will never get to row 7 and a black pawn
+    # will never get to row 0, so the methods will simply return if the pawn does not belong to the specified player
     pawn.promote_pawn_black(board.board)
     pawn.promote_pawn_white(board.board)
   end
 
   # in the case of a castle, this only moves the rook; the regular #move_piece will move the king
-  # the board can only be updated after the check for a castle is made, because the check uses the board, which is why
-  # the #handle_king method needs to do its own board update after it performs the castle
+  # the board needs to be updated only after the check for a castle is made, because the check uses the board, which is
+  # why the #handle_king method needs to do its own board update after it performs the castle
   def handle_king(king, row, col)
     board = self.board.board
 

@@ -1,7 +1,6 @@
 require_relative 'piece'
 require_relative 'knight'
 require 'pry-byebug'
-require_relative 'jsonable'
 
 # manages the king piece
 class King < Piece
@@ -16,7 +15,6 @@ class King < Piece
   # included to verify whether or not the king is in check from bishop/rook/queen
   include Moveable_diagonally
   include Moveable_in_straight_line
-  include JSONable
 
   attr_reader :white, :black, :player
   attr_accessor :has_moved, :in_check
@@ -32,40 +30,9 @@ class King < Piece
 
     non_checked_spaces = filter_checked_positions(board, non_allied_spaces)
 
-    moves_next_to_king = moves_next_to_opponent_king(board, non_checked_spaces)
+    moves_next_to_opponent_king = moves_next_to_opponent_king(board, non_checked_spaces)
 
-    non_checked_spaces.delete_if { |space| moves_next_to_king.include?(space) }
-  end
-
-  def castles(board)
-    return [row, col + 2] if castle_right?(board)
-
-    [row, col - 2] if castle_left?(board)
-  end
-
-  def filter_checked_positions(board, possible_king_moves)
-    # remembering them to change them back after the filtering is finished
-    row_on_board = row
-    col_on_board = col
-
-    # this simulates a scenario in which the king is being moved to all the possible positions and verifies whether or
-    # not the king would be in check
-    possible_king_moves.delete_if do |move|
-      self.row = move[0]
-      self.col = move[1]
-
-      in_check?(board)
-    end
-
-    # once the simulation is done, the king's coordinates need to be set back to its initial, real ones
-    self.row = row_on_board
-    self.col = col_on_board
-
-    possible_king_moves
-  end
-
-  def filter_allied_pieces(board, possible_king_moves)
-    possible_king_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
+    non_checked_spaces.delete_if { |space| moves_next_to_opponent_king.include?(space) }
   end
 
   def moves_on_upper_row
@@ -78,6 +45,12 @@ class King < Piece
 
   def moves_on_lower_row
     [[row - 1, col - 1], [row - 1, col], [row - 1, col + 1]]
+  end
+
+  def castles(board)
+    return [row, col + 2] if castle_right?(board)
+
+    [row, col - 2] if castle_left?(board)
   end
 
   def castle_right?(board)
@@ -100,6 +73,32 @@ class King < Piece
     false
   end
 
+  def filter_allied_pieces(board, possible_king_moves)
+    possible_king_moves.delete_if { |move| allied_piece?(board, move[0], move[1]) }
+  end
+
+  def filter_checked_positions(board, possible_king_moves)
+    # remembering them to change them back after the filtering is finished
+    row_backup = row
+    col_backup = col
+
+    # this simulates a scenario in which the king is being moved to all the possible positions and verifies whether or
+    # not the king would be in check
+    possible_king_moves.delete_if do |move|
+      self.row = move[0]
+      self.col = move[1]
+
+      in_check?(board)
+    end
+
+    # once the simulation is done, the king's coordinates need to be set back to its initial, real ones
+    self.row = row_backup
+    self.col = col_backup
+
+    possible_king_moves
+  end
+
+  # checker added for readability, because the #check_from... methods return the checker if there is one
   def in_check?(board)
     if check_from_rook?(board)
       self.in_check = true
@@ -126,15 +125,17 @@ class King < Piece
       row = path[0]
       col = path[1]
 
-      piece = board[row][col]
+      cell = board[row][col]
+      cell_row = cell.row
+      cell_col = cell.col
 
-      # this exists to fix a weird edge case in which a queen that is right next to the king on the horizontal or vertical
-      # line with no other pieces nearby, will return true when #filter_checked_positions runs the simulation and it
-      # simulates a scenario in which the king's position is the same as the queen's position
+      # this exists to fix a weird edge case with a queen that is right next to the king on the horizontal or vertical
+      # line with no other pieces nearby; for a reason that remains unknown to me, #filter_checked_positions returns
+      # true when it simulates the scenario in which the king's position is the same as the queen's position
       return false if path[0] == self.row && path[1] == self.col
 
-      return piece if piece.instance_of?(Rook) && opponent_piece?(board, piece.row, piece.col) ||
-                      piece.instance_of?(Queen) && opponent_piece?(board, piece.row, piece.col)
+      return cell if cell.instance_of?(Rook) && opponent_piece?(board, cell_row, cell_col) ||
+                     cell.instance_of?(Queen) && opponent_piece?(board, cell_row, cell_col)
     end
 
     false
@@ -199,10 +200,10 @@ class King < Piece
   end
 
   # returns an array of moves that would place the king next to the enemy king
-  def moves_next_to_opponent_king(board, non_checked_spaces)
+  def moves_next_to_opponent_king(board, possible_moves)
     spaces_next_to_enemy_king = []
 
-    non_checked_spaces.each do |square|
+    possible_moves.each do |square|
       simulated_king = King.new(player, square[0], square[1])
 
       simulated_king_moves(board, simulated_king).each do |space|
