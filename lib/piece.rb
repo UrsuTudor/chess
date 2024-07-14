@@ -1,5 +1,8 @@
 require 'pry-byebug'
 
+# initializes player, row and col
+# contains methods that determine whether or not a given piece is an opponent or an ally of self, and whether or not a
+# desired move would be out of bounds
 class Piece
   def initialize(player, row, col)
     @player = player
@@ -11,7 +14,9 @@ class Piece
 
   def opponent_piece?(board, row, col)
     return false if board[row][col].nil?
+
     return false if player == 'white' && board[row][col].player == 'white'
+
     return false if player == 'black' && board[row][col].player == 'black'
 
     true
@@ -19,7 +24,9 @@ class Piece
 
   def allied_piece?(board, row, col)
     return false if board[row][col].nil?
+
     return true if player == 'white' && board[row][col].player == 'white'
+
     return true if player == 'black' && board[row][col].player == 'black'
 
     false

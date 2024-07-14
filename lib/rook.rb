@@ -1,7 +1,7 @@
 require_relative 'piece'
 require_relative 'moveable'
-require 'pry-byebug'
 require_relative 'jsonable'
+require 'pry-byebug'
 
 # manages the rook piece
 class Rook < Piece
