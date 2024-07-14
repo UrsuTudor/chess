@@ -58,9 +58,7 @@ class CheckFinder
 
   # this is used by #move_piece in the Game class
   def still_in_check?
-    if turn == 'white' && white_king.in_check?(board.board) || turn == 'black' && black_king.in_check?(board.board)
-      p white_king
-      p white_king.in_check?(board.board)
+    if turn == 'White' && white_king.in_check?(board.board) || turn == 'Black' && black_king.in_check?(board.board)
       puts 'That move leaves your king in check!'
       return true
     end
