@@ -1,10 +1,13 @@
 require 'pry-byebug'
-module Moveable_diagonally
+
+# contains methods that get the right and left diagonals
+# used by bishop, queen and king(to determine check paths)
+module MoveableDiagonally
   def right_diagonal(board)
-    descending_right_diagonal(board) + ascending_right_diagonal(board)
+    descending_half_of_right_diagonal(board) + ascending_half_of_right_diagonal(board)
   end
 
-  def ascending_right_diagonal(board)
+  def ascending_half_of_right_diagonal(board)
     diagonal = []
     current_row = row
     current_col = col
@@ -23,7 +26,7 @@ module Moveable_diagonally
     diagonal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
-  def descending_right_diagonal(board)
+  def descending_half_of_right_diagonal(board)
     diagonal = []
     current_row = row
     current_col = col
@@ -43,10 +46,10 @@ module Moveable_diagonally
   end
 
   def left_diagonal(board)
-    ascending_left_diagonal(board) + descending_left_diagonal(board)
+    ascending_half_of_left_diagonal(board) + descending_half_of_left_diagonal(board)
   end
 
-  def ascending_left_diagonal(board)
+  def ascending_half_of_left_diagonal(board)
     diagonal = []
     current_row = row
     current_col = col
@@ -65,7 +68,7 @@ module Moveable_diagonally
     diagonal.delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
   end
 
-  def descending_left_diagonal(board)
+  def descending_half_of_left_diagonal(board)
     diagonal = []
     current_row = row
     current_col = col
@@ -85,7 +88,9 @@ module Moveable_diagonally
   end
 end
 
-module Moveable_in_straight_line
+# contains methods that get the horizontal or vertical movement of a piece
+# used by Rook, Queen and King(to determine check paths)
+module MoveableInStraightLine
   def valid_horizontal(board)
     exclude_out_of_bounds_moves(left_horizontal(board) + right_horizontal(board))
   end

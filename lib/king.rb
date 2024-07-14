@@ -1,6 +1,7 @@
 require_relative 'piece'
 require_relative 'knight'
 require 'pry-byebug'
+require_relative 'jsonable'
 
 # manages the king piece
 class King < Piece
@@ -13,8 +14,9 @@ class King < Piece
   end
 
   # included to verify whether or not the king is in check from bishop/rook/queen
-  include Moveable_diagonally
-  include Moveable_in_straight_line
+  include MoveableDiagonally
+  include MoveableInStraightLine
+  include JSONable
 
   attr_reader :white, :black, :player
   attr_accessor :has_moved, :in_check
@@ -126,6 +128,8 @@ class King < Piece
       col = path[1]
 
       cell = board[row][col]
+      next if cell.nil?
+
       cell_row = cell.row
       cell_col = cell.col
 

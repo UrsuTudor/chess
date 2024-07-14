@@ -13,7 +13,7 @@ class Rook < Piece
 
   attr_reader :white, :black, :player
 
-  include Moveable_in_straight_line
+  include MoveableInStraightLine
   include JSONable
 
   def possible_moves(board)

@@ -10,7 +10,7 @@ class Bishop < Piece
     @black = '♗'
   end
 
-  include Moveable_diagonally
+  include MoveableDiagonally
   include JSONable
 
   attr_reader :white, :black, :player

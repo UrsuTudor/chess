@@ -18,19 +18,37 @@ class Pawn < Piece
   attr_accessor :has_moved
 
   def possible_moves(board)
-    possible_moves = []
-
-    if player == 'white'
-      possible_moves.push(valid_one_forward_white(board))
-      possible_moves.push(valid_doulbe_forward_white(board)) if has_moved == false
-      valid_takes_white(board).each { |el| possible_moves.push(el) }
-    else
-      possible_moves.push(valid_one_forward_black(board))
-      possible_moves.push(valid_doulbe_forward_black(board)) if has_moved == false
-      valid_takes_black(board).each { |el| possible_moves.push(el) }
-    end
+    possible_moves = if player == 'white'
+                       white_moves(board)
+                     else
+                       black_moves(board)
+                     end
 
     exclude_out_of_bounds_moves(possible_moves).delete_if { |square| board[square[0]][square[1]].instance_of?(King) }
+  end
+
+  def white_moves(board)
+    possible_moves = []
+
+    possible_moves.push(valid_one_forward_white(board))
+
+    possible_moves.push(valid_doulbe_forward_white(board)) if has_moved == false
+
+    valid_takes_white(board).each { |el| possible_moves.push(el) }
+
+    possible_moves
+  end
+
+  def black_moves(board)
+    possible_moves = []
+
+    possible_moves.push(valid_one_forward_black(board))
+
+    possible_moves.push(valid_doulbe_forward_black(board)) if has_moved == false
+
+    valid_takes_black(board).each { |el| possible_moves.push(el) }
+
+    possible_moves
   end
 
   def valid_one_forward_white(board)
@@ -51,6 +69,8 @@ class Pawn < Piece
 
   def valid_takes_white(board)
     valid_takes = []
+    row = self.row
+    col = self.col
 
     valid_takes.push([row + 1, col + 1]) if opponent_piece?(board, row + 1, col + 1)
 
@@ -61,6 +81,8 @@ class Pawn < Piece
 
   def valid_takes_black(board)
     valid_takes = []
+    row = self.row
+    col = self.col
 
     valid_takes.push([row - 1, col + 1]) if opponent_piece?(board, row - 1, col + 1)
 
@@ -70,6 +92,9 @@ class Pawn < Piece
   end
 
   def promote_pawn_white(board)
+    row = self.row
+    col = self.col
+
     return unless row == 7
 
     puts 'What rank would you like to promote your pawn to?'
@@ -90,6 +115,9 @@ class Pawn < Piece
   end
 
   def promote_pawn_black(board)
+    row = self.row
+    col = self.col
+
     return unless row.zero?
 
     puts 'What rank would you like to promote your pawn to?'
