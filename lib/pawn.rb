@@ -35,6 +35,8 @@ class Pawn < Piece
 
     possible_moves.push(valid_doulbe_forward_white(board)) if has_moved == false
 
+    puts 'en passant available' if en_passant?(board)
+
     valid_takes_white(board).each { |el| possible_moves.push(el) }
 
     possible_moves
@@ -46,6 +48,8 @@ class Pawn < Piece
     possible_moves.push(valid_one_forward_black(board))
 
     possible_moves.push(valid_doulbe_forward_black(board)) if has_moved == false
+
+    puts 'en passant available' if en_passant?(board)
 
     valid_takes_black(board).each { |el| possible_moves.push(el) }
 
@@ -136,5 +140,19 @@ class Pawn < Piece
     else
       'Please choose a valid piece.'
     end
+  end
+
+  def en_passant?(board)
+    potential_enemy_pawns = [board[row][col - 1], board[row][col + 1]]
+
+    potential_enemy_pawns.delete_if { |space| !space.instance_of?(Pawn) }
+
+    return false if potential_enemy_pawns.empty?
+
+    potential_enemy_pawns.each do |pawn|
+      return pawn if pawn.en_passantable
+    end
+
+    false
   end
 end

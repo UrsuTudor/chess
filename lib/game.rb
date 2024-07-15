@@ -127,7 +127,9 @@ by typing the word in the console at any point."
 
     pawn.en_passantable = true if new_row == current_pawn_row + 2 || new_row == current_pawn_row - 2
 
-    # write en_passant conditions, add the move to the pawn, update board differently depending on en passant or not
+    board.board[new_row][new_col] = pawn
+    board.board[pawn.row][pawn.col] = nil
+
     pawn.row = new_row
     pawn.col = new_col
 
@@ -166,7 +168,6 @@ by typing the word in the console at any point."
     end
   end
 
-  # deleting the old Rook and placing a new one is easier and faster than creating a new movement exception for the Rook
   def do_castle_right(board, row, col)
     return unless row == 7 && col == 6 || row.zero? && col == 6
 
