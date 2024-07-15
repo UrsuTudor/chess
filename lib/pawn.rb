@@ -35,11 +35,13 @@ class Pawn < Piece
 
     possible_moves.push(valid_doulbe_forward_white(board)) if has_moved == false
 
-    puts 'en passant available' if en_passant?(board)
-
     valid_takes_white(board).each { |el| possible_moves.push(el) }
 
-    possible_moves
+    return possible_moves unless en_passant?(board)
+
+    en_passantable_pawn = en_passant?(board)
+
+    possible_moves.push([en_passantable_pawn.row + 1, en_passantable_pawn.col])
   end
 
   def black_moves(board)
@@ -49,11 +51,13 @@ class Pawn < Piece
 
     possible_moves.push(valid_doulbe_forward_black(board)) if has_moved == false
 
-    puts 'en passant available' if en_passant?(board)
-
     valid_takes_black(board).each { |el| possible_moves.push(el) }
 
-    possible_moves
+    return possible_moves unless en_passant?(board)
+
+    en_passantable_pawn = en_passant?(board)
+
+    possible_moves.push([en_passantable_pawn.row - 1, en_passantable_pawn.col])
   end
 
   def valid_one_forward_white(board)
@@ -143,14 +147,17 @@ class Pawn < Piece
   end
 
   def en_passant?(board)
-    potential_enemy_pawns = [board[row][col - 1], board[row][col + 1]]
+    pawn_row = row
+    pawn_col = col
+
+    potential_enemy_pawns = [board[pawn_row][pawn_col - 1], board[pawn_row][pawn_col + 1]]
 
     potential_enemy_pawns.delete_if { |space| !space.instance_of?(Pawn) }
 
     return false if potential_enemy_pawns.empty?
 
     potential_enemy_pawns.each do |pawn|
-      return pawn if pawn.en_passantable
+      return pawn if pawn.en_passantable && opponent_piece?(board, pawn.row, pawn.col)
     end
 
     false
