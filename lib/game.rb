@@ -51,9 +51,25 @@ by typing the word in the console at any point."
   def choose_piece(input)
     piece = board.board[input[0]][input[1]]
 
+    # this ensures that the en_passantable status is reset if the opponent doesn't immediately make use of it by choosing
+    # a pawn
+    all_en_passantable_to_false unless piece.instance_of?(Pawn)
+
     return piece if input_handler.valid_piece?(piece)
 
     different_piece
+  end
+
+  def all_en_passantable_to_false
+    pawns = []
+
+    board.board.each do |row|
+      row.each do |col|
+        pawns.push(col) if col.instance_of?(Pawn)
+      end
+    end
+
+    pawns.each { |pawn| pawn.en_passantable = false }
   end
 
   def different_piece
@@ -127,7 +143,7 @@ by typing the word in the console at any point."
 
     pawn.has_moved = true
 
-    pawn.en_passantable = true if new_row == current_pawn_row + 2 || new_row == current_pawn_row - 2
+    pawn.en_passantable = true if pawn_jump?(pawn, new_row)
 
     return perform_white_en_passant(pawn, new_row, new_col) if white_en_passant_requested?(pawn, new_row, new_col)
     return perform_black_en_passant(pawn, new_row, new_col) if black_en_passant_requested?(pawn, new_row, new_col)
@@ -142,6 +158,10 @@ by typing the word in the console at any point."
     # will never get to row 0, so the methods will simply return if the pawn does not belong to the specified player
     pawn.promote_pawn_black(board)
     pawn.promote_pawn_white(board)
+  end
+
+  def pawn_jump?(pawn, new_row)
+    new_row == pawn.row + 2 || new_row == pawn.row - 2
   end
 
   def perform_white_en_passant(pawn, new_row, new_col)
