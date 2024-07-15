@@ -10,12 +10,13 @@ class Pawn < Piece
     @white = '♙'
     @black = '♟︎'
     @has_moved = false
+    @en_passantable = false
   end
 
   include JSONable
 
   attr_reader :white, :black, :player
-  attr_accessor :has_moved
+  attr_accessor :has_moved, :en_passantable
 
   def possible_moves(board)
     possible_moves = if player == 'white'

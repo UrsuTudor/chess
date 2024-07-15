@@ -108,6 +108,7 @@ by typing the word in the console at any point."
 
   def update_board(piece, row, col)
     return handle_king(piece, row, col) if piece.instance_of?(King)
+    return handle_pawn(piece, row, col) if piece.instance_of?(Pawn)
 
     board.board[row][col] = piece
     board.board[piece.row][piece.col] = nil
@@ -115,12 +116,20 @@ by typing the word in the console at any point."
     piece.row = row
     piece.col = col
 
-    handle_pawn(piece) if piece.instance_of?(Pawn)
+    handle_pawn(piece, col) if piece.instance_of?(Pawn)
   end
 
   # diferent behaviour depending on whether or not the pawn has moved or has reached the finish
-  def handle_pawn(pawn)
+  def handle_pawn(pawn, new_row, new_col)
     pawn.has_moved = true
+
+    current_pawn_row = pawn.row
+
+    pawn.en_passantable = true if new_row == current_pawn_row + 2 || new_row == current_pawn_row - 2
+
+    # write en_passant conditions, add the move to the pawn, update board differently depending on en passant or not
+    pawn.row = new_row
+    pawn.col = new_col
 
     # having them without an if statement is not a problem because a white pawn will never get to row 7 and a black pawn
     # will never get to row 0, so the methods will simply return if the pawn does not belong to the specified player
