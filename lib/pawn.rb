@@ -5,12 +5,12 @@ require_relative 'jsonable'
 
 # manages the pawn piece
 class Pawn < Piece
-  def initialize(player, row, col)
+  def initialize(player, row, col, has_moved = false, en_passantable = false)
     super(player, row, col)
     @white = '♙'
     @black = '♟︎'
-    @has_moved = false
-    @en_passantable = false
+    @has_moved = has_moved
+    @en_passantable = en_passantable
   end
 
   include JSONable
@@ -161,5 +161,18 @@ class Pawn < Piece
     end
 
     false
+  end
+
+  def to_json(*args)
+    {
+      JSON.create_id => self.class.name,
+      'player' => player,
+      'row' => row,
+      'col' => col,
+      'white' => white,
+      'black' => black,
+      'has_moved' => has_moved,
+      'en_passantable' => en_passantable
+    }.to_json(*args)
   end
 end

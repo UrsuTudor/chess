@@ -5,11 +5,11 @@ require_relative 'jsonable'
 
 # manages the king piece
 class King < Piece
-  def initialize(player, row, col)
+  def initialize(player, row, col, has_moved = false)
     super(player, row, col)
     @white = '♚'
     @black = '♔'
-    @has_moved = false
+    @has_moved = has_moved
     @in_check = false
   end
 
@@ -266,5 +266,17 @@ class King < Piece
     else
       'white'
     end
+  end
+
+  def to_json(*args)
+    {
+      JSON.create_id => self.class.name,
+      'player' => player,
+      'row' => row,
+      'col' => col,
+      'white' => white,
+      'black' => black,
+      'has_moved' => has_moved
+    }.to_json(*args)
   end
 end

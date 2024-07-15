@@ -1,8 +1,15 @@
+require_relative 'jsonable'
+
 # includes methods that make it possible to save and load the game
 module Saveable
+  include JSONable
+
   def save_game
     serialized_game = JSON.dump({ board: board.board.each do |row|
       row.each do |col|
+        next col.to_json if col.nil?
+        next col.to_json if col.instance_of?(Pawn)
+
         col.to_json
       end
     end,
@@ -29,7 +36,12 @@ module Saveable
   def load_board(save_data)
     save_data.map do |row|
       row.map do |col|
-        class_from_json(col) unless col.nil?
+        next if col.nil?
+
+        next pawn_from_json(col) if class_name(col) == Pawn
+        next king_from_json(col) if class_name(col) == King
+
+        class_from_json(col)
       end
     end
   end

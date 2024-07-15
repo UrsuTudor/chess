@@ -9,12 +9,21 @@ module JSONable
       'row' => row,
       'col' => col,
       'white' => white,
-      'black' => black
+      'black' => black,
     }.to_json(*args)
   end
 
   def class_from_json(json_class)
     class_name(json_class).new(json_class['player'], json_class['row'], json_class['col'])
+  end
+
+  def pawn_from_json(json_class)
+    class_name(json_class).new(json_class['player'], json_class['row'], json_class['col'], json_class['has_moved'],
+                               json_class['en_passantable'])
+  end
+
+  def king_from_json(json_class)
+    class_name(json_class).new(json_class['player'], json_class['row'], json_class['col'], json_class['has_moved'])
   end
 
   def class_name(json_class)
