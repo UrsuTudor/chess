@@ -121,24 +121,86 @@ by typing the word in the console at any point."
 
   # diferent behaviour depending on whether or not the pawn has moved or has reached the finish
   def handle_pawn(pawn, new_row, new_col)
-    pawn.has_moved = true
-
+    board = self.board.board
     current_pawn_row = pawn.row
+    current_pawn_col = pawn.col
+
+    pawn.has_moved = true
 
     pawn.en_passantable = true if new_row == current_pawn_row + 2 || new_row == current_pawn_row - 2
 
-    board.board[new_row][new_col] = pawn
-    board.board[pawn.row][pawn.col] = nil
+    return perform_white_en_passant(pawn, new_row, new_col) if white_en_passant_requested?(pawn, new_row, new_col)
+    return perform_black_en_passant(pawn, new_row, new_col) if black_en_passant_requested?(pawn, new_row, new_col)
+
+    board[new_row][new_col] = pawn
+    board[current_pawn_row][current_pawn_col] = nil
 
     pawn.row = new_row
     pawn.col = new_col
 
     # having them without an if statement is not a problem because a white pawn will never get to row 7 and a black pawn
     # will never get to row 0, so the methods will simply return if the pawn does not belong to the specified player
-    pawn.promote_pawn_black(board.board)
-    pawn.promote_pawn_white(board.board)
+    pawn.promote_pawn_black(board)
+    pawn.promote_pawn_white(board)
   end
 
+  def perform_white_en_passant(pawn, new_row, new_col)
+    board = self.board.board
+    current_pawn_row = pawn.row
+    current_pawn_col = pawn.col
+
+    board[new_row][new_col] = pawn
+    board[current_pawn_row][new_col] = nil
+    board[current_pawn_row][current_pawn_col] = nil
+
+    pawn.row = new_row
+    pawn.col = new_col
+  end
+
+  def white_en_passant_requested?(pawn, new_row, new_col)
+    current_pawn_row = pawn.row
+    current_pawn_col = pawn.col
+
+    return false unless  new_row == current_pawn_row + 1 && new_col == current_pawn_col + 1 ||
+                         new_row == current_pawn_row + 1 && new_col == current_pawn_col - 1
+
+    potential_en_passantable_pawn = board.board[current_pawn_row][new_col]
+
+    return false unless potential_en_passantable_pawn.instance_of?(Pawn)
+
+    return false unless potential_en_passantable_pawn.en_passantable
+
+    true
+  end
+
+  def perform_black_en_passant(pawn, new_row, new_col)
+    board = self.board.board
+    current_pawn_row = pawn.row
+    current_pawn_col = pawn.col
+
+    board[new_row][new_col] = pawn
+    board[current_pawn_row][new_col] = nil
+    board[current_pawn_row][current_pawn_col] = nil
+
+    pawn.row = new_row
+    pawn.col = new_col
+  end
+
+  def black_en_passant_requested?(pawn, new_row, new_col)
+    current_pawn_row = pawn.row
+    current_pawn_col = pawn.col
+
+    return false unless new_row == current_pawn_row - 1 && new_col == current_pawn_col + 1 ||
+                        new_row == current_pawn_row - 1 && new_col == current_pawn_col - 1
+
+    potential_en_passantable_pawn = board.board[current_pawn_row][new_col]
+
+    return false unless potential_en_passantable_pawn.instance_of?(Pawn)
+
+    return false unless potential_en_passantable_pawn.en_passantable
+
+    true
+  end
   # in the case of a castle, this only moves the rook; the regular #move_piece will move the king
   # the board needs to be updated only after the check for a castle is made, because the check uses the board, which is
   # why the #handle_king method needs to do its own board update after it performs the castle
