@@ -58,6 +58,8 @@ class King < Piece
   def castle_right?(board)
     king_right = right_horizontal(board)
 
+    return false if castle_path_blocked?(board, king_right)
+
     return false if has_moved == true || king_right.length < 2
     return true if row == 7 && board[row][col - 4].instance_of?(Rook) ||
                    row.zero? && board[row][col - 4].instance_of?(Rook)
@@ -68,9 +70,21 @@ class King < Piece
   def castle_left?(board)
     king_left = left_horizontal(board)
 
+    return false if castle_path_blocked?(board, king_left)
+
     return false if has_moved == true || king_left.length < 3
     return true if row == 7 && board[row][col + 3].instance_of?(Rook) ||
                    row.zero? && board[row][col + 3].instance_of?(Rook)
+
+    false
+  end
+
+  def castle_path_blocked?(board, king_path)
+    king_path.each do |square|
+      simulated_king = King.new(player, square[0], square[1])
+
+      return true if simulated_king.in_check?(board)
+    end
 
     false
   end
@@ -210,6 +224,9 @@ class King < Piece
     possible_moves.each do |square|
       simulated_king = King.new(player, square[0], square[1])
 
+      # we are using a simulated king to check the area around a possible move of the real king
+      # this means that if the king is on 3,3 and can move to 3,4, this will check every position around 3,4 and will
+      # push 3,4 into the array above if 3,4 would place the real king next to the enemy king
       simulated_king_moves(board, simulated_king).each do |space|
         if board[space[0]][space[1]].instance_of?(King)
           spaces_next_to_enemy_king.push([simulated_king.row, simulated_king.col])
