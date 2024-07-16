@@ -38,7 +38,7 @@ by typing the word in the console at any point."
       next_turn
       update_helpers
 
-      break if check_finder.check_mate?
+      break board.display_board if check_finder.check_mate?
       check_finder.check?
     end
   end
@@ -253,7 +253,7 @@ by typing the word in the console at any point."
   def do_castle_right(board, row, col)
     return unless row == 7 && col == 6 || row.zero? && col == 6
 
-    board[row][5] = Rook.new(board[row][7].player, row, 7)
+    board[row][5] = Rook.new(board[row][7].player, row, 5)
     board[row][7] = nil
   end
 
