@@ -43,9 +43,6 @@ class Board
   def print_square(col)
     if col.nil?
       print "#{col}    |"
-    # for some reason black pawns are bigger than the other pieces and I need a special case to handle them
-    elsif col.instance_of?(Pawn) && col.player == 'black'
-      print " #{col.black} |" if col.player == 'black'
     else
       print " #{col.white}  |" if col.player == 'white'
       print " #{col.black}  |" if col.player == 'black'

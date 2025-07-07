@@ -39,6 +39,7 @@ by typing the word in the console at any point."
       update_helpers
 
       break board.display_board if check_finder.check_mate?
+
       check_finder.check?
     end
   end

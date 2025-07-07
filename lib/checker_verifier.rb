@@ -42,6 +42,7 @@ class CheckerVerifier
     return lower_half_of_left_angled_diagonal_blockable?(checker, king) if checker_row > king_row && checker_col < king_col
 
     return upper_half_of_left_angled_diagonal_blockable?(checker, king) if checker_row < king_row && checker_col > king_col
+
     upper_half_of_right_angled_diagonal_blockable?(checker, king) if checker_row < king_row && checker_col < king_col
   end
 
